@@ -1,0 +1,32 @@
+= Prepare your desktop
+
+== Prerequisit:
+* Docker
+* docker-compose
+
+== Install asdf
+
+If you are on linux use ASDF https://github.com/asdf-vm/asdf
+
+== Install Erlang
+
+use asdf to install erlang
+[source language='shell']
+----
+asdf plugin-add erlang
+asdf install erlang 21.1
+asdf global erlang 21.1
+----
+
+== Install Elixir
+[source language='shell']
+----
+asdf plugin-add elixir
+asdf install elixir 1.7.3
+asdf global elixir 1.7.3
+----
+== Install Phoenix
+[source language='shell']
+----
+ mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez
+----
