@@ -50,20 +50,6 @@ defmodule Slang.Accounts do
     end
   end
 
-  defp verify_password(password, %User{} = user) when is_binary(password) do
-    if checkpw(password, user.password_hash) do
-      {:ok, user}
-    else
-      {:error, :invalid_password}
-    end
-  end
-
-  defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
-    with {:ok, user} <- get_by_email(email),
-    do: verify_password(password, user)
-  end
-
-
   def token_sign_in(email, password) do
     case email_password_auth(email, password) do
       {:ok, user} ->
@@ -72,6 +58,22 @@ defmodule Slang.Accounts do
         {:error, :unauthorized}
     end
   end
+
+  defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
+    with {:ok, user} <- get_by_email(email),
+    do: verify_password(password, user)
+  end
+
+  defp verify_password(password, %User{} = user) when is_binary(password) do
+    if checkpw(password, user.password_hash) do
+      {:ok, user}
+    else
+      {:error, :invalid_password}
+    end
+  end
+
+
+
 
 
 
