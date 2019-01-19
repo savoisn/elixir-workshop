@@ -1,0 +1,27 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <%= label f, :email %>
+  <%= text_input f, :email %>
+  <%= error_tag f, :email %>
+
+  <%= label f, :password %>
+  <%= text_input f, :password %>
+  <%= error_tag f, :password %>
+
+  <%= label f, :remember_me %>
+  <%= checkbox f, :remember_me %>
+  <%= error_tag f, :remember_me %>
+
+  <div>
+    <%= if assigns[:is_login] do %>
+      <%= submit "Login" %>
+    <% else %>
+      <%= submit "Save" %>
+    <% end %>
+  </div>
+<% end %>

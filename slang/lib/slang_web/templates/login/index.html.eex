@@ -1,0 +1,30 @@
+<h1>Listing Logins</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Password</th>
+      <th>Remember me</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for login <- @logins do %>
+    <tr>
+      <td><%= login.email %></td>
+      <td><%= login.password %></td>
+      <td><%= login.remember_me %></td>
+
+      <td>
+        <%= link "Show", to: Routes.login_path(@conn, :show, login) %>
+        <%= link "Edit", to: Routes.login_path(@conn, :edit, login) %>
+        <%= link "Delete", to: Routes.login_path(@conn, :delete, login), method: :delete, data: [confirm: "Are you sure?"] %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Login", to: Routes.login_path(@conn, :new) %></span>

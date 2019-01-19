@@ -1,0 +1,23 @@
+<h1>Show Login</h1>
+
+<ul>
+
+  <li>
+    <strong>Email:</strong>
+    <%= @login.email %>
+  </li>
+
+  <li>
+    <strong>Password:</strong>
+    <%= @login.password %>
+  </li>
+
+  <li>
+    <strong>Remember me:</strong>
+    <%= @login.remember_me %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.login_path(@conn, :edit, @login) %></span>
+<span><%= link "Back", to: Routes.login_path(@conn, :index) %></span>

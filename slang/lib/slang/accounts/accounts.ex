@@ -50,6 +50,26 @@ defmodule Slang.Accounts do
     end
   end
 
+  def logout(conn) do
+    conn 
+    |> Guardian.Plug.sign_out
+  end
+
+  def login(conn, user) do
+    IO.inspect conn
+    conn 
+      |> Guardian.Plug.sign_in(user)
+  end
+
+  def form_sign_in(email, password, conn) do
+    case email_password_auth(email, password) do
+      {:ok, user} ->
+        {:ok, login(conn, user)}
+      _ ->
+        {:error, :unauthorized}
+    end
+  end
+
   def token_sign_in(email, password) do
     case email_password_auth(email, password) do
       {:ok, user} ->
@@ -141,5 +161,101 @@ defmodule Slang.Accounts do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  alias Slang.Accounts.Login
+
+  @doc """
+  Returns the list of logins.
+
+  ## Examples
+
+      iex> list_logins()
+      [%Login{}, ...]
+
+  """
+  def list_logins do
+    Repo.all(Login)
+  end
+
+  @doc """
+  Gets a single login.
+
+  Raises `Ecto.NoResultsError` if the Login does not exist.
+
+  ## Examples
+
+      iex> get_login!(123)
+      %Login{}
+
+      iex> get_login!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_login!(id), do: Repo.get!(Login, id)
+
+  @doc """
+  Creates a login.
+
+  ## Examples
+
+      iex> create_login(%{field: value})
+      {:ok, %Login{}}
+
+      iex> create_login(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_login(attrs \\ %{}) do
+    %Login{}
+    |> Login.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a login.
+
+  ## Examples
+
+      iex> update_login(login, %{field: new_value})
+      {:ok, %Login{}}
+
+      iex> update_login(login, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_login(%Login{} = login, attrs) do
+    login
+    |> Login.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Login.
+
+  ## Examples
+
+      iex> delete_login(login)
+      {:ok, %Login{}}
+
+      iex> delete_login(login)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_login(%Login{} = login) do
+    Repo.delete(login)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking login changes.
+
+  ## Examples
+
+      iex> change_login(login)
+      %Ecto.Changeset{source: %Login{}}
+
+  """
+  def change_login(%Login{} = login) do
+    Login.changeset(login, %{})
   end
 end

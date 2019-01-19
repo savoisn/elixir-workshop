@@ -1,0 +1,5 @@
+<h1>Login Page</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.login_path(@conn, :login_validate)) %>
+
+<span><%= link "Back", to: Routes.page_path(@conn, :index) %></span>
