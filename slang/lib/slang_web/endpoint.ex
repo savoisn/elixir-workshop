@@ -40,7 +40,7 @@ defmodule SlangWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_slang_key",
-    signing_salt: "VQeK1pVr"
+    signing_salt: "aTAs0uH+"
 
   plug SlangWeb.Router
 end

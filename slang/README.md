@@ -18,16 +18,3 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Mailing list: http://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
-
-## Entity generation
-
-```
-mix phx.gen.schema Chat.Room rooms name:string description:string
-mix phx.gen.schema Chat.Message messages text:string sender_id:references:users room_id:references:rooms
-```
-
-```
-mix phx.gen.html Account UserType usertypes type:string
-mix phx.gen.html Account User users name:string email:string adress:string user_type_id:references:usertypes
-```
-

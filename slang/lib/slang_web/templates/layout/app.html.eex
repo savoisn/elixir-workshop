@@ -14,18 +14,6 @@
           <ul>
             <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
           </ul>
-          <ul>
-            <li>
-              <%= if assigns[:current_user] do %>
-                <%= link "Logout", to: Routes.login_path(@conn, :logout) %>
-                <%= assigns.current_user.email %>
-                <%= assigns.current_user.id %>
-              <% else %>
-                <%= link "New Login", to: Routes.login_path(@conn, :login) %>
-                not connected
-              <% end %>
-						</li>
-          </ul>
         </nav>
         <a href="http://phoenixframework.org/" class="phx-logo">
           <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
@@ -37,7 +25,6 @@
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
       <%= render @view_module, @view_template, assigns %>
     </main>
-  <script>window.userId = "<%= assigns.current_user.id %>";</script>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

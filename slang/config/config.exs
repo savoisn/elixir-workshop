@@ -13,15 +13,9 @@ config :slang,
 # Configures the endpoint
 config :slang, SlangWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "LEXECj/jowYAW+HPipR74yN3EIeSBYRA8zwzuxSfjFb5/HlgCL6CkIzv7JYGHSwE",
+  secret_key_base: "m0sjRVGHhJ4EU6+VwD/ZOzv9q41GsRzJ3znR2TwapXBWIXSJMnxNYGAHSjLJVx2H",
   render_errors: [view: SlangWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Slang.PubSub, adapter: Phoenix.PubSub.PG2]
-
-
-# Guardian config
-config :slang, Slang.Guardian,
-       issuer: "slang",
-       secret_key: "a2rLR0uj4W1nQ3h3kTCONdx/jGtKlnrHvu0AUv7EwLLthDFTvsjXNL3SRZbPd7x/<Paste>"
 
 # Configures Elixir's Logger
 config :logger, :console,
