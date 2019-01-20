@@ -28,5 +28,51 @@ asdf global elixir 1.7.3
 == Install Phoenix
 [source language='shell']
 ----
- mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez
+mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez
 ----
+
+== Install Postgres in a container
+
+I typically run mine with something like that : 
+
+[source language='shell']
+----
+docker pull postgres:11.1
+
+docker run -d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v $HOME/tmp/docker-data/elixir_worksho/pg-data:/var/lib/postgresql/data --name postgres_elixir postgres:11.1
+----
+
+
+== IDE 
+
+I'll present thing with VSCode +
+Install those plugin : 
+- vscode-elixir
+- elixir snippets
+
+
+== It would be awesome if : 
+running
+
+[source language='shell']
+----
+mix new my_project
+----
+creates a project in myproject folder
+
+[source language='shell']
+----
+mix phx.new my_phx_project
+----
+creates a phoenix project in myproject folder
+
+and if postgres was running and listening on localhost
+[source language='shell',subs="+quotes,+macros"]
+----
+psql -h localhost -U *_postgres_user_change_me_*
+----
+let's you connect to your database :D
+
+== If you have question please raise an Issue on this github repository
+
+
