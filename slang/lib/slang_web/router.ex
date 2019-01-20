@@ -27,11 +27,14 @@ defmodule SlangWeb.Router do
     #pipe_through [:browser, :jwt_authenticated]
     pipe_through [:browser, :with_session]
 
+
     get "/", PageController, :index
 		get "/logins/login", LoginController, :login
 		get "/logins/logout", LoginController, :logout
 		post "/logins/validate", LoginController, :login_validate
 		resources "/logins", LoginController
+    resources "/rooms", RoomController
+    resources "/messages", MessageController
   end
 
   # Other scopes may use custom stacks.

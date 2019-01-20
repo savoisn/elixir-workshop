@@ -19,6 +19,7 @@
               <%= if assigns[:current_user] do %>
                 <%= link "Logout", to: Routes.login_path(@conn, :logout) %>
                 <%= assigns.current_user.email %>
+                <%= assigns.current_user.id %>
               <% else %>
                 <%= link "New Login", to: Routes.login_path(@conn, :login) %>
                 not connected
@@ -36,6 +37,7 @@
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
       <%= render @view_module, @view_template, assigns %>
     </main>
+  <script>window.userId = "<%= assigns.current_user.id %>";</script>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
