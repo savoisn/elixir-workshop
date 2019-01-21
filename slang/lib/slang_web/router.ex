@@ -1,4 +1,5 @@
 defmodule SlangWeb.Router do
+
   use SlangWeb, :router
 
   pipeline :browser do
@@ -13,15 +14,23 @@ defmodule SlangWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :with_session do
+		plug SlangWeb.Guardian.AuthBrowserPipeline
+	end
+
+
   scope "/", SlangWeb do
-    pipe_through :browser
+    pipe_through [:browser, :with_session]
 
     get "/", PageController, :index
-
     resources "/users", UserController
-
     get "/login", UserController, :login
-  end
+ 		post "/logout", UserController, :logout
+
+    post "/validate_login", UserController, :validate_login
+
+	end
+
 
   # Other scopes may use custom stacks.
   # scope "/api", SlangWeb do

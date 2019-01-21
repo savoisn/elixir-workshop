@@ -43,6 +43,7 @@ defmodule Slang.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      {:guardian, "~> 1.2.1"},
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12"}
     ]

@@ -14,9 +14,30 @@ defmodule SlangWeb.UserController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  def logout(conn, _params) do
+    conn 
+    |> Accounts.logout
+    |> redirect(to: Routes.page_path(conn, :index))
+
+  end
+
   def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
     render(conn, "login.html", changeset: changeset)
+  end
+
+  def validate_login(conn, %{"user" => login_params}) do
+    case Accounts.form_sign_in(login_params["email"], login_params["password"], conn) do 
+      {:ok, conn} ->
+        conn
+        |> put_flash(:info, "Login successfully.")
+        |> redirect(to: Routes.page_path(conn, :index))
+      {:error, :unauthorized} ->
+        changeset = Accounts.change_user(%User{})
+        conn
+        |> put_flash(:error, "Couldn't log you in")
+        |> render("login.html", changeset: changeset)
+    end
   end
 
   def create(conn, %{"user" => user_params}) do

@@ -17,6 +17,11 @@ config :slang, SlangWeb.Endpoint,
   render_errors: [view: SlangWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Slang.PubSub, adapter: Phoenix.PubSub.PG2]
 
+# Guardian config
+config :slang, Slang.Guardian,
+       issuer: "slang",
+       secret_key: "a2rLR0uj4W1nQ3h3kTCONdx/jGtKlnrHvu0AUv7EwLLthDFTvsjXNL3SRZbPd7x/"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

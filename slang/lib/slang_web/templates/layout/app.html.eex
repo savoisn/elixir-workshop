@@ -11,10 +11,18 @@
     <header>
       <section class="container">
         <nav role="navigation">
+
           <ul>
             <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
             <li>
-              <%= link "Login", to: Routes.user_path(@conn, :login) %>
+              <%= if assigns[:current_user] do %>
+                <%= link "Logout", to: Routes.user_path(@conn, :logout), method: "post" %>
+                <%= assigns.current_user.email %>
+                <%= assigns.current_user.id %>
+              <% else %>
+                <%= link "Login", to: Routes.user_path(@conn, :login) %>
+                not connected
+              <% end %>
             </li>
           </ul>
         </nav>
