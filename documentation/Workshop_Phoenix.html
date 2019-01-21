@@ -1141,6 +1141,332 @@ Same as before, we used the <code>Routes</code> helper function to redirect to t
 </div>
 <div class="sect2">
 <h3 id="_managing_jwt_token_with_guardian">Managing JWT Token with Guardian</h3>
+<div class="paragraph">
+<p>That&#8217;s the worst part (in terms of complexity) - you can avoid it by moving to the tag <code>user_authentication_finished</code></p>
+</div>
+<div class="paragraph">
+<p>Now that we have an awesome page where we can have a user input there credential, It might be usefull to process those credential to authenticate the user !</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s do that right now !</p>
+</div>
+<div class="paragraph">
+<p>first we defined a <code>form_login</code> but what does it do?</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/user/form_login.eex</div>
+<div class="content">
+<pre>&lt;%= form_for @changeset, @action, fn f -&gt; %&gt;
+  &lt;%= if @changeset.action do %&gt;
+    &lt;div class="alert alert-danger"&gt;
+      &lt;p&gt;Oops, something went wrong! Please check the errors below.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;% end %&gt;
+
+  &lt;%= label f, :email %&gt;
+  &lt;%= text_input f, :email %&gt;
+  &lt;%= error_tag f, :email %&gt;
+
+  &lt;%= label f, :password %&gt;
+  &lt;%= password_input f, :password %&gt;
+  &lt;%= error_tag f, :password %&gt;
+
+  &lt;div&gt;
+    &lt;%= submit "Login" %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>if looks like that a function, <code>form_for</code><br>
+that takes 3 params, a changeset (a keyvalue map), an action (!!) and a function.</p>
+</div>
+<div class="paragraph">
+<p>so <code>@action</code> is what will be called on submit
+and the function as a parameter is simply a way to like the html tag with the elixir code. This function receive a parametre f, that is passed to each component, label, text_input, error_tag, etc&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>But the action seems to come from a controller. Let&#8217;s look at the <code>user_controller</code></p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/controllers/user_controller.ex</div>
+<div class="content">
+<pre>  def login(conn, _params) do
+    changeset = Accounts.change_user(%User{})
+    render(conn, "login.html", changeset: changeset)
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hum nothing here&#8230;&#8203; except we are rendering a login.html, let&#8217;s look at this template</p>
+</div>
+<div class="listingblock">
+<div class="title">/lib/slang_web/templates/user/login.html.eex</div>
+<div class="content">
+<pre>&lt;h1&gt;Login&lt;/h1&gt;
+
+&lt;%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %&gt;
+
+&lt;span&gt;&lt;%= link "Back", to: Routes.user_path(@conn, :index) %&gt;&lt;/span&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Yeah here !
+That&#8217;s where we define the action when we add a new keyvalue to the assigns map.
+<code>assigns</code> is the named of the map used to hold the variable of the template</p>
+</div>
+<div class="paragraph">
+<p>So the action is a route pointing to the <code>:create</code> action in <code>UserController</code>
+Looking at the <code>mix phx.routes</code> it&#8217;s a POST which make sense since we want to push a form</p>
+</div>
+<div class="paragraph">
+<p>But we don&#8217;t want to create a user&#8230;&#8203; we want to validate its email / password</p>
+</div>
+<div class="paragraph">
+<p>The Plan :
+- Add a new route to handle the post submition
+- Create a function in the controller to handle to POST
+- Delegate the check to the Accounts Module
+- Find the user by it&#8217;s email from the database
+- Compare the hashed password from the database, with the form hashed password
+- Give all that back to the controller for it to display result to the user.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create a new Route in the router for that.</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre>  scope "/", SlangWeb do
+
+    ...
+
+    post "/validate_login", UserController, :validate_login
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>nothing new, a post to a controller function</p>
+</div>
+<div class="paragraph">
+<p>in the controller let&#8217;s create that function</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/controllers/user_controller.ex</div>
+<div class="content">
+<pre>  def validate_login(conn, %{"user" =&gt; login_params}) do
+    case Accounts.form_sign_in(login_params["email"], login_params["password"], conn) do
+      {:ok, conn} -&gt;
+        conn
+        |&gt; put_flash(:info, "Login successfully.")
+        |&gt; redirect(to: Routes.page_path(conn, :index))
+      {:error, :unauthorized} -&gt;
+        changeset = Accounts.change_user(%User{})
+        conn
+        |&gt; put_flash(:error, "Couldn't log you in")
+        |&gt; render("login.html", changeset: changeset)
+    end
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>it delegate the check of the password to the Accounts Module
+if form_sign_in return the type <code>{:ok, conn}</code> everything is ok<br>
+and we can redirect the user to the home page, and display a message about the success
+if form_sign_in returns an error, user stays on login page, and an error is displayed</p>
+</div>
+<div class="paragraph">
+<p>first we need a function the get a user from the database by it&#8217;s email adress
+.lib/slang/accounts/accounts.ex</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>defmodule Slang.Accounts do
+
+  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+  ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>first import the cryptographic function that we will use <code>checkpw</code> and <code>dummy_checkpw</code></p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  ...
+  defp get_by_email(email) when is_binary(email) do
+    case Repo.get_by(User, email: email) do
+      nil -&gt;
+        dummy_checkpw()
+        {:error, "Login error."}
+      user -&gt;
+        {:ok, user}
+    end
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Repo is the data repository, it handle calls to the database.
+It has a convinient function that will retrieve one entity called <code>get_by</code>, takes 2 args, first is the entity, and second is a field and it&#8217;s value to query</p>
+</div>
+<div class="paragraph">
+<p><code>dummy_checkpw</code> will create a delay when the user is not found, mimiking a password hash comparaison, to avoid email fishing on your app.</p>
+</div>
+<div class="paragraph">
+<p>if a user is found it return it.
+if no user is found it return an error.</p>
+</div>
+<div class="paragraph">
+<p>ok now we need to create this form_sign_in function in the Accounts module</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  ...
+
+  def form_sign_in(email, password, conn) do
+    case email_password_auth(email, password) do
+      {:ok, _user} -&gt;
+        {:ok, conn}
+      _ -&gt;
+        {:error, :unauthorized}
+    end
+  end
+
+  ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>it delegate the password checkin to the email_password_auth function</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  ...
+
+  defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
+    with {:ok, user} &lt;- get_user_by_email(email),
+    do: verify_password(password, user)
+  end
+
+  ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>call the get_user_by_email function to retrieve the entity from the database
+if it does, it calls another function to verify the password</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  ...
+
+  defp verify_password(password, %User{} = user) when is_binary(password) do
+    if checkpw(password, user.password_hash) do
+      {:ok, user}
+    else
+      {:error, :invalid_password}
+     end
+  end
+
+  ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>checkpw</code> is a function provided by Comeonin (our crypto dependency) to check the password against it&#8217;s hashed version.</p>
+</div>
+<div class="paragraph">
+<p>if the user password is validated it is returned
+else it return as error with an invalid_password</p>
+</div>
+<div class="paragraph">
+<p>And we are done !
+We can check the password of the user and be sure it&#8217;s validated</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+git tag at this point is : <code>password_check_done</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Only thing we need to do now is store that in the JWT token of the app.
+That&#8217;s the job of Guardian</p>
+</div>
+<div class="paragraph">
+<p>first add the guardian dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">mix.exs</div>
+<div class="content">
+<pre>  defp deps do
+    [
+    ...
+      {:guardian, "~&gt; 1.2.1"},
+    ...
+    ]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then configure it:</p>
+</div>
+<div class="listingblock">
+<div class="title">config/config.exs</div>
+<div class="content">
+<pre># Guardian config
+config :slang, Slang.Guardian,
+       issuer: "slang",
+       secret_key: "a2rLR0uj4W1nQ3h3kTCONdx/jGtKlnrHvu0AUv7EwLLthDFTvsjXNL3SRZbPd7x/"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>a word on config,<br>
+there&#8217;s 2 part to the config :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>config.exs witch is the default / main config,</p>
+</li>
+<li>
+<p>dev.exs / prod.exs which is a loaded by the config.exs based on the MIX_ENV environment variable</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>let&#8217;s call a login function in our <code>form_sign_in</code> on success of password check like that :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  ...
+  def form_sign_in(email, password, conn) do
+    case email_password_auth(email, password) do
+      {:ok, user} -&gt;
+        {:ok, login(conn, user)}
+      _ -&gt;
+        {:error, :unauthorized}
+    end
+  end
+  ...</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  def login(conn, user) do
+    IO.inspect conn
+    conn
+      |&gt; Guardian.Plug.sign_in(user)
+  end</pre>
+</div>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre></pre>
@@ -1170,7 +1496,7 @@ Same as before, we used the <code>Routes</code> helper function to redirect to t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-21 11:45:45 UTC
+Last updated 2019-01-21 20:18:27 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">
