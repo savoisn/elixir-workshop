@@ -3,12 +3,19 @@
 == Prerequisit:
 * Docker
 * docker-compose
+* erlang
+* elixir
+* phoenix
+* postgres
 
-== Install asdf
+== If you have question please raise an Issue on this github repository
+
+== On Linux
+=== Install asdf
 
 If you are on linux use ASDF https://github.com/asdf-vm/asdf
 
-== Install Erlang
+=== Install Erlang
 
 use asdf to install erlang
 [source language='shell']
@@ -18,20 +25,20 @@ asdf install erlang 21.1
 asdf global erlang 21.1
 ----
 
-== Install Elixir
+=== Install Elixir
 [source language='shell']
 ----
 asdf plugin-add elixir
 asdf install elixir 1.7.3
 asdf global elixir 1.7.3
 ----
-== Install Phoenix
+=== Install Phoenix
 [source language='shell']
 ----
 mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez
 ----
 
-== Install Postgres in a container
+=== Install Postgres in a container
 
 I typically run mine with something like that : 
 
@@ -42,8 +49,41 @@ docker pull postgres:11.1
 docker run -d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v $HOME/tmp/docker-data/elixir_worksho/pg-data:/var/lib/postgresql/data --name postgres_elixir postgres:11.1
 ----
 
+== On Windows
 
-== IDE 
+WARNING: Utiliser git bash (🦄) pas le cmd windows (💩)
+
+=== Docker
+download and install
+https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe
+
+=== Erlang
+Install Erland Msi (google)https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0~windows_amd64.exe
+
+=== Elixir
+Install elixir Msi (google)https://repo.hex.pm/elixir-websetup.exe
+
+=== Phoenix
+run :
+
+[source language='shell']
+----
+mix archive.install hex phx_new 1.4.0
+----
+
+=== Postgres through Docker
+
+No persistant data if you remove (rm) the container
+
+[source language='shell']
+----
+docker pull postgres:11.1
+docker run -d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 --name postgres_elixir postgres:11.1
+----
+
+WARNING: Utiliser git bash (🦄) pas le cmd windows (💩)
+
+== Text Editorc 
 
 I'll present thing with VSCode +
 Install those plugin : 
@@ -51,8 +91,7 @@ Install those plugin :
 - elixir snippets
 
 
-== It would be awesome if : 
-running
+== It would be awesome, and save time to everyone, if : 
 
 [source language='shell']
 ----
