@@ -1,4 +1,4 @@
-<h1>New User</h1>
+<h1>Login</h1>
 
 <%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %>
 

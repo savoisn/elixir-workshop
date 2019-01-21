@@ -57,7 +57,7 @@ mix ecto.migrate
 ----
 
 
-now let's open a browser and navigate to http://localhost:4000/
+now let's open a browser and navigate to http://localhost:4000/[^]
 
 image::first_phoenix_screen.png[]
 
@@ -77,13 +77,22 @@ mix phx.gen.html Accounts User users email:string password:string password_confi
 Generated a bunch of stuff... first let's follow the instructions.
 
 place this line in lib/slang_web/router.ex
+
+.lib/slang_web/router.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
-resources "/users", UserController
+  scope "/", SlangWeb do
+    pipe_through :browser
+
+    get "/", PageController, :index
+
+    **resources "/users", UserController**
+  end
 ----
 
 
 and the run the migration
+
 [source language='shell',subs="+quotes,+macros"]
 ----
 mix ecto.migrate
@@ -119,12 +128,16 @@ Ok awesome on to the next level, stop saving clear password !!! We are not Sony 
 === Virtual Attributes in Schema
 
 let's replace those 2 password attribute in the schema to make them virtual in lib/slang/accounts/user.ex
+
+.lib/slang/accounts/user.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
 ----
 and add a new field to store the password_hash
+
+.lib/slang/accounts/user.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
     field :password_hash, :string
@@ -158,6 +171,8 @@ mix ecto.migrate
 and check your table in postgres pgadmin3 or 4 or anything you want and see that it has changed :)
 
 ok if you can't make it on the migration, here it is :
+
+.priv/repo/migrations/_timestamp_change_user_table.exs
 [source language='elixir',subs="+quotes,+macros"]
 ----
 defmodule Slang.Repo.Migrations.Change_user_table do
@@ -184,6 +199,8 @@ end
 === Hashing the password
 
 let's open mix.exs and add a dependency to hash password
+
+.mix.exs
 [source language='elixir',subs="+quotes,+macros"]
 ----
   defp deps do
@@ -212,9 +229,18 @@ The Repo is the "instance" that handles the order we pass to the database.
 
 Ok back to our little complicated changeset.
 replace the current changeset in the User Schema `lib/slang/accounts/user.ex` by this
+
+.lib/slang/accounts/user.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
+
+defmodule
+
+  ...
+
   alias Slang.Accounts.User
+
+  ...
 
   @doc false
   def changeset(%User{} = user, attrs) do
@@ -274,6 +300,8 @@ Before we change something let me give you some kind of explanations +
 How is this router working :
 
 First thing we notice is that pipeline, 
+
+.lib/slang_web/router.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
   pipeline :browser do
@@ -302,6 +330,8 @@ so here we will go through:
 Next in the router is another pipeline used for api - we will see that later in the workshop
 
 Then comes this Scope :
+
+.lib/slang_web/router.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
   scope "/", SlangWeb do
@@ -314,12 +344,222 @@ Then comes this Scope :
   end
 ----
 
-Ok the scope is where the actual routing is done
-as you can see this is where we use our browser pipeline.
+Ok the scope is where the actual routing is done. +
+As you can see this is where we use our browser pipeline. +
+So for a connection to be handled by this scope it will have to comply with the pipeline :browser
+
+.lib/slang_web/router.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+    get "/", PageController, :index
+----
+Defines a endpoint at the root of the webapp +
+If the request is a GET it will be handled by the `index` function PageController refered to as the atom :index
+
+.lib/slang_web/router.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+    resources "/users", UserController
+----
+
+resources define a complete set of urls for CRUD operation on entity
+it's the equivalent of all this:
+
+.mix phx.routes
+[source language='elixir',subs="+quotes,+macros"]
+----
+user_path  GET     /users           SlangWeb.UserController :index
+user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
+user_path  GET     /users/new       SlangWeb.UserController :new
+user_path  GET     /users/:id       SlangWeb.UserController :show
+user_path  POST    /users           SlangWeb.UserController :create
+user_path  PATCH   /users/:id       SlangWeb.UserController :update
+           PUT     /users/:id       SlangWeb.UserController :update
+user_path  DELETE  /users/:id       SlangWeb.UserController :delete
+----
+
+Here is what we are looking for, this `new` route
+let's try to create a new route to our login page.
+I want my login page to be at the root of my webapp : http://localhost:4000/login[^]
+
+.lib/slang_web/router.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+    get "/login", UserController, :login
+----
+
+let's had that at the end of our scope
+you can try the URL in your browser right now, but it will fail since the UserController can't handle our login operation yet. Let's fix that !
+
+Open `lib/slang_web/controller/user_controller.ex`
+
+We have a lot of function in there... each one is handling an operation from the router. This is where the logic on the connection is handled. Please don't put too much application logic here. It's not the best place, your logic should go in the `lib/slang` folder in it's respectable domain :)
+
+Now we really need this login action to be implemented, since we want to copy the new page, let's also copy the new function from our UserController and rename it login 
+
+.lib/slang_web/controller/user_controller.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  def login(conn, _params) do
+    changeset = Accounts.change_user(%User{})
+    render(conn, "new.html", changeset: changeset)
+  end
+----
+
+if we point to the `new.html` template, phoenix is happily showing you the new form, but we want a login form... so :
+
+.lib/slang_web/controller/user_controller.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  def login(conn, _params) do
+    changeset = Accounts.change_user(%User{})
+    render(conn, "login.html", changeset: changeset)
+  end
+----
+
+Now Phoenix is not happy anymore, he commands us to create a login template... let's oblige :)
+
+just copy paste this file `lib/slang_web/templates/user/new.html.eex` to `lib/slang_web/templates/user/login.html.eex`
+
+It renders something ! Awesome ! Well done fellow Elixirian !
+
+Now let's customize our new login page !
+Take a look at the `lib/slang_web/templates/user/login.html.eex`
+Oy Oy Oy it refers to some kind of form.html. 
+That's a composition pattern used in the templates.
+When Phoenix generate the template, it generate only one form and reuse for all the actions : creation and update
+
+Since we are not aiming for reusability just copy the `lib/slang_web/templates/user/form.html.eex` to `lib/slang_web/templates/user/form_login.html.eex` and update the login template to reflect the change
+
+.lib/slang_web/templates/user/login.html.eex
+[source language='elixir',subs="+quotes,+macros"]
+----
+<%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %>
+----
+
+and the `lib/slang_web/templates/user/form_login.html.eex`
+
+.lib/slang_web/templates/user/form_login.html.eex
+[source language='elixir',subs="+quotes,+macros"]
+----
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <%= label f, :email %>
+  <%= text_input f, :email %>
+  <%= error_tag f, :email %>
+
+  <%= label f, :password %>
+  <%= password_input f, :password %>
+  <%= error_tag f, :password %>
+
+  <div>
+    <%= submit "Login" %>
+  </div>
+<% end %>
+----
+
+Last but not least for this part, +
+the user will not find the login URL by itself, we need to create a link for that on the main page !
+
+.lib/slang_web/templates/layout/app.html.eex
+[source language='shell',subs="+quotes,+macros"]
+----
+        <nav role="navigation">
+          <ul>
+            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
+            **<li>
+              <%= link "New Login", to: Routes.user_path(@conn, :login) %>
+            </li>**
+          </ul>
+        </nav>
+----
+
+so we define a link with the phoenix helper function link, and we link to a `Routes.login_path`
+But where is it comming from? How do I know ?
+
+.mix phx.routes
+[source language='shell',subs="+quotes,+macros"]
+----
+-> % mix phx.routes
+page_path  GET     /                SlangWeb.PageController :index
+user_path  GET     /users           SlangWeb.UserController :index
+user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
+user_path  GET     /users/new       SlangWeb.UserController :new
+user_path  GET     /users/:id       SlangWeb.UserController :show
+user_path  POST    /users           SlangWeb.UserController :create
+user_path  PATCH   /users/:id       SlangWeb.UserController :update
+           PUT     /users/:id       SlangWeb.UserController :update
+user_path  DELETE  /users/:id       SlangWeb.UserController :delete
+*user_path  GET     /login           SlangWeb.UserController :login*
+----
+
+See that last line in bold?
+it's where you can find the function we are using in the template.
+
+The `@conn` parameter is the way we refer to arguments passed to the template, so yeah the `conn` is passed as an argument to the template, that should not be a great surprise, since the connection hold the state of the request.
+
+We can see how the param are passed to the template in the controller
+
+.lib/slang_web/controllers/user_controller.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  def index(conn, _params) do
+    users = Accounts.list_users()
+    render(conn, "index.html", users: users)
+  end
+----
+we will pass the list of users in a Map with the key `users`
+
+it is used in the template like this :
+
+.lib/slang_web/templates/user/index.html.eex
+[source language='elixir',subs="+quotes,+macros"]
+----
+<%= for user <- *@users* do %>
+    <tr>
+      <td><%= user.email %></td>
+      <td><%= user.password %></td>
+      <td><%= user.password_confirmation %></td>
+
+      <td>
+        <%= link "Show", to: Routes.user_path(@conn, :show, user) %>
+        <%= link "Edit", to: Routes.user_path(@conn, :edit, user) %>
+        <%= link "Delete", to: Routes.user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"] %>
+      </td>
+    </tr>
+<% end %>
+----
+
+we see that it iterates in the list of users using the `@users` syntax.
+you can also see that the `user` is defined inside the template and doesn't need the `@` that the way to differenciate between template arguments and scoped variable of the template.
+you can also see how to use the `for` loop in Elixir with the backward arrow `<-`
+
+For cosmetic reason I want that when I click on the Elixir Phoenix Logo I am redirected to the index of the app, instead of the Phoenix web page.
 
 
+[source language='elixir',subs="+quotes,+macros"]
+----
+      <section class="container">
 
+        ...
 
+        <%= link to: Routes.page_path(@conn, :index), class: "phx-logo" do %>
+          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
+        <% end %>
+      </section>
+----
+
+We replace the `<a href` that surround the `img` with the Phoenix Template way to create a link. +
+Same as before, we used the `Routes` helper function to redirect to the `:index` of the app.
+
+That the end of this part concentrated on the templating system of Phoenix
+
+The tag of the code in the repo is : `forms_template_login`
 
 
 === Managing JWT Token with Guardian

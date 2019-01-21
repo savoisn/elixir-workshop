@@ -523,7 +523,7 @@ mix ecto.migrate</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>now let&#8217;s open a browser and navigate to <a href="http://localhost:4000/" class="bare">http://localhost:4000/</a></p>
+<p>now let&#8217;s open a browser and navigate to <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a></p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -558,8 +558,15 @@ To generate the different form for our users management</p>
 <p>place this line in lib/slang_web/router.ex</p>
 </div>
 <div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>resources "/users", UserController</pre>
+<pre>  scope "/", SlangWeb do
+    pipe_through :browser
+
+    get "/", PageController, :index
+
+    <strong>resources "/users", UserController</strong>
+  end</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -613,6 +620,7 @@ keep playing with the different screen for a moment</p>
 <p>let&#8217;s replace those 2 password attribute in the schema to make them virtual in lib/slang/accounts/user.ex</p>
 </div>
 <div class="listingblock">
+<div class="title">lib/slang/accounts/user.ex</div>
 <div class="content">
 <pre>    field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true</pre>
@@ -622,6 +630,7 @@ keep playing with the different screen for a moment</p>
 <p>and add a new field to store the password_hash</p>
 </div>
 <div class="listingblock">
+<div class="title">lib/slang/accounts/user.ex</div>
 <div class="content">
 <pre>    field :password_hash, :string</pre>
 </div>
@@ -665,6 +674,7 @@ and look for something like change or alter or something</p>
 <p>ok if you can&#8217;t make it on the migration, here it is :</p>
 </div>
 <div class="listingblock">
+<div class="title">priv/repo/migrations/_timestamp_change_user_table.exs</div>
 <div class="content">
 <pre>defmodule Slang.Repo.Migrations.Change_user_table do
   use Ecto.Migration
@@ -686,6 +696,7 @@ end</pre>
 <p>let&#8217;s open mix.exs and add a dependency to hash password</p>
 </div>
 <div class="listingblock">
+<div class="title">mix.exs</div>
 <div class="content">
 <pre>  defp deps do
     [
@@ -722,8 +733,15 @@ The Repo is the "instance" that handles the order we pass to the database.</p>
 replace the current changeset in the User Schema <code>lib/slang/accounts/user.ex</code> by this</p>
 </div>
 <div class="listingblock">
+<div class="title">lib/slang/accounts/user.ex</div>
 <div class="content">
-<pre>  alias Slang.Accounts.User
+<pre>defmodule
+
+  ...
+
+  alias Slang.Accounts.User
+
+  ...
 
   @doc false
   def changeset(%User{} = user, attrs) do
@@ -816,6 +834,7 @@ How is this router working :</p>
 <p>First thing we notice is that pipeline,</p>
 </div>
 <div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
 <div class="content">
 <pre>  pipeline :browser do
     plug :accepts, ["html"]
@@ -862,6 +881,7 @@ it&#8217;s a build in mechanism in phoenix - we want to display messages to our 
 <p>Then comes this Scope :</p>
 </div>
 <div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
 <div class="content">
 <pre>  scope "/", SlangWeb do
     pipe_through :browser
@@ -874,8 +894,249 @@ it&#8217;s a build in mechanism in phoenix - we want to display messages to our 
 </div>
 </div>
 <div class="paragraph">
-<p>Ok the scope is where the actual routing is done
-as you can see this is where we use our browser pipeline.</p>
+<p>Ok the scope is where the actual routing is done.<br>
+As you can see this is where we use our browser pipeline.<br>
+So for a connection to be handled by this scope it will have to comply with the pipeline :browser</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre>    get "/", PageController, :index</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Defines a endpoint at the root of the webapp<br>
+If the request is a GET it will be handled by the <code>index</code> function PageController refered to as the atom :index</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre>    resources "/users", UserController</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>resources define a complete set of urls for CRUD operation on entity
+it&#8217;s the equivalent of all this:</p>
+</div>
+<div class="listingblock">
+<div class="title">mix phx.routes</div>
+<div class="content">
+<pre>user_path  GET     /users           SlangWeb.UserController :index
+user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
+user_path  GET     /users/new       SlangWeb.UserController :new
+user_path  GET     /users/:id       SlangWeb.UserController :show
+user_path  POST    /users           SlangWeb.UserController :create
+user_path  PATCH   /users/:id       SlangWeb.UserController :update
+           PUT     /users/:id       SlangWeb.UserController :update
+user_path  DELETE  /users/:id       SlangWeb.UserController :delete</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is what we are looking for, this <code>new</code> route
+let&#8217;s try to create a new route to our login page.
+I want my login page to be at the root of my webapp : <a href="http://localhost:4000/login" class="bare" target="_blank" rel="noopener">http://localhost:4000/login</a></p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre>    get "/login", UserController, :login</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>let&#8217;s had that at the end of our scope
+you can try the URL in your browser right now, but it will fail since the UserController can&#8217;t handle our login operation yet. Let&#8217;s fix that !</p>
+</div>
+<div class="paragraph">
+<p>Open <code>lib/slang_web/controller/user_controller.ex</code></p>
+</div>
+<div class="paragraph">
+<p>We have a lot of function in there&#8230;&#8203; each one is handling an operation from the router. This is where the logic on the connection is handled. Please don&#8217;t put too much application logic here. It&#8217;s not the best place, your logic should go in the <code>lib/slang</code> folder in it&#8217;s respectable domain :)</p>
+</div>
+<div class="paragraph">
+<p>Now we really need this login action to be implemented, since we want to copy the new page, let&#8217;s also copy the new function from our UserController and rename it login</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/controller/user_controller.ex</div>
+<div class="content">
+<pre>  def login(conn, _params) do
+    changeset = Accounts.change_user(%User{})
+    render(conn, "new.html", changeset: changeset)
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>if we point to the <code>new.html</code> template, phoenix is happily showing you the new form, but we want a login form&#8230;&#8203; so :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/controller/user_controller.ex</div>
+<div class="content">
+<pre>  def login(conn, _params) do
+    changeset = Accounts.change_user(%User{})
+    render(conn, "login.html", changeset: changeset)
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now Phoenix is not happy anymore, he commands us to create a login template&#8230;&#8203; let&#8217;s oblige :)</p>
+</div>
+<div class="paragraph">
+<p>just copy paste this file <code>lib/slang_web/templates/user/new.html.eex</code> to <code>lib/slang_web/templates/user/login.html.eex</code></p>
+</div>
+<div class="paragraph">
+<p>It renders something ! Awesome ! Well done fellow Elixirian !</p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s customize our new login page !
+Take a look at the <code>lib/slang_web/templates/user/login.html.eex</code>
+Oy Oy Oy it refers to some kind of form.html.
+That&#8217;s a composition pattern used in the templates.
+When Phoenix generate the template, it generate only one form and reuse for all the actions : creation and update</p>
+</div>
+<div class="paragraph">
+<p>Since we are not aiming for reusability just copy the <code>lib/slang_web/templates/user/form.html.eex</code> to <code>lib/slang_web/templates/user/form_login.html.eex</code> and update the login template to reflect the change</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/user/login.html.eex</div>
+<div class="content">
+<pre>&lt;%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and the <code>lib/slang_web/templates/user/form_login.html.eex</code></p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/user/form_login.html.eex</div>
+<div class="content">
+<pre>&lt;%= form_for @changeset, @action, fn f -&gt; %&gt;
+  &lt;%= if @changeset.action do %&gt;
+    &lt;div class="alert alert-danger"&gt;
+      &lt;p&gt;Oops, something went wrong! Please check the errors below.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;% end %&gt;
+
+  &lt;%= label f, :email %&gt;
+  &lt;%= text_input f, :email %&gt;
+  &lt;%= error_tag f, :email %&gt;
+
+  &lt;%= label f, :password %&gt;
+  &lt;%= password_input f, :password %&gt;
+  &lt;%= error_tag f, :password %&gt;
+
+  &lt;div&gt;
+    &lt;%= submit "Login" %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Last but not least for this part,<br>
+the user will not find the login URL by itself, we need to create a link for that on the main page !</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/layout/app.html.eex</div>
+<div class="content">
+<pre>        &lt;nav role="navigation"&gt;
+          &lt;ul&gt;
+            &lt;li&gt;&lt;a href="https://hexdocs.pm/phoenix/overview.html"&gt;Get Started&lt;/a&gt;&lt;/li&gt;
+            <strong>&lt;li&gt;
+              &lt;%= link "New Login", to: Routes.user_path(@conn, :login) %&gt;
+            &lt;/li&gt;</strong>
+          &lt;/ul&gt;
+        &lt;/nav&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>so we define a link with the phoenix helper function link, and we link to a <code>Routes.login_path</code>
+But where is it comming from? How do I know ?</p>
+</div>
+<div class="listingblock">
+<div class="title">mix phx.routes</div>
+<div class="content">
+<pre>-&gt; % mix phx.routes
+page_path  GET     /                SlangWeb.PageController :index
+user_path  GET     /users           SlangWeb.UserController :index
+user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
+user_path  GET     /users/new       SlangWeb.UserController :new
+user_path  GET     /users/:id       SlangWeb.UserController :show
+user_path  POST    /users           SlangWeb.UserController :create
+user_path  PATCH   /users/:id       SlangWeb.UserController :update
+           PUT     /users/:id       SlangWeb.UserController :update
+user_path  DELETE  /users/:id       SlangWeb.UserController :delete
+<strong>user_path  GET     /login           SlangWeb.UserController :login</strong></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See that last line in bold?
+it&#8217;s where you can find the function we are using in the template.</p>
+</div>
+<div class="paragraph">
+<p>The <code>@conn</code> parameter is the way we refer to arguments passed to the template, so yeah the <code>conn</code> is passed as an argument to the template, that should not be a great surprise, since the connection hold the state of the request.</p>
+</div>
+<div class="paragraph">
+<p>We can see how the param are passed to the template in the controller</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/controllers/user_controller.ex</div>
+<div class="content">
+<pre>  def index(conn, _params) do
+    users = Accounts.list_users()
+    render(conn, "index.html", users: users)
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>we will pass the list of users in a Map with the key <code>users</code></p>
+</div>
+<div class="paragraph">
+<p>it is used in the template like this :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/user/index.html.eex</div>
+<div class="content">
+<pre>&lt;%= for user &lt;- <strong>@users</strong> do %&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;%= user.email %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= user.password %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= user.password_confirmation %&gt;&lt;/td&gt;
+
+      &lt;td&gt;
+        &lt;%= link "Show", to: Routes.user_path(@conn, :show, user) %&gt;
+        &lt;%= link "Edit", to: Routes.user_path(@conn, :edit, user) %&gt;
+        &lt;%= link "Delete", to: Routes.user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"] %&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;% end %&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>we see that it iterates in the list of users using the <code>@users</code> syntax.
+you can also see that the <code>user</code> is defined inside the template and doesn&#8217;t need the <code>@</code> that the way to differenciate between template arguments and scoped variable of the template.
+you can also see how to use the <code>for</code> loop in Elixir with the backward arrow <code>&#8592;</code></p>
+</div>
+<div class="paragraph">
+<p>For cosmetic reason I want that when I click on the Elixir Phoenix Logo I am redirected to the index of the app, instead of the Phoenix web page.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>      &lt;section class="container"&gt;
+
+        ...
+
+        &lt;%= link to: Routes.page_path(@conn, :index), class: "phx-logo" do %&gt;
+          &lt;img src="&lt;%= Routes.static_path(@conn, "/images/phoenix.png") %&gt;" alt="Phoenix Framework Logo"/&gt;
+        &lt;% end %&gt;
+      &lt;/section&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We replace the <code>&lt;a href</code> that surround the <code>img</code> with the Phoenix Template way to create a link.<br>
+Same as before, we used the <code>Routes</code> helper function to redirect to the <code>:index</code> of the app.</p>
+</div>
+<div class="paragraph">
+<p>That the end of this part concentrated on the templating system of Phoenix</p>
+</div>
+<div class="paragraph">
+<p>The tag of the code in the repo is : <code>forms_template_login</code></p>
 </div>
 </div>
 <div class="sect2">
@@ -909,7 +1170,7 @@ as you can see this is where we use our browser pipeline.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-21 08:32:50 UTC
+Last updated 2019-01-21 11:45:45 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">
