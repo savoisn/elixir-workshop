@@ -14,6 +14,11 @@ defmodule SlangWeb.UserController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  def login(conn, _params) do
+    changeset = Accounts.change_user(%User{})
+    render(conn, "login.html", changeset: changeset)
+  end
+
   def create(conn, %{"user" => user_params}) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->

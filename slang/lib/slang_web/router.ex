@@ -20,6 +20,7 @@ defmodule SlangWeb.Router do
 
     resources "/users", UserController
 
+    get "/login", UserController, :login
   end
 
   # Other scopes may use custom stacks.
