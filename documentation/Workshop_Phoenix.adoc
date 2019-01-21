@@ -1,0 +1,347 @@
+:source-highlighter: highlightjs
+:highlightjsdir: highlight
+:imagesdir: pictures
+
+= Elixir Phoenix Workshop
+
+== What we will build
+
+A very minimalistic version of a Chat App, with Phoenix
+Features will include : 
+
+- User Management
+- Form Authentication
+- JWT token for session management
+- Minimal (very very) Chat interface
+- Room Management
+
+NOTE: Let's dig in
+
+== Create a Phoenix App - tag : creation
+
+We will build an App called Slang, Sla for Slack, and ng because why not!?! +
+The name of the app will be used in Module name, so if you want to be able to copy paste easily use `slang` as App name
+
+[source language='shell',subs="+quotes,+macros"]
+----
+mix phx.new *_folder_name_* --app slang
+----
+
+It will generate a Phoenix Project in the folder specified
+You will get asked to download dependencies, you can safely accept :D
+
+=== A tour of the Generated Code
+
+[source, subs="+quotes,+macros"]
+----
+|
+|_ \_build # where the package will be build
+|_ assets  # static assets, Javascript, CSS, images, webpack
+|_ config  # conf for the app
+|_ deps    # dependencies binaries
+|_ lib     # it's where our code will be.
+|_ priv    # database migration and target for static build
+|_ test    # TESTS for the sake of your mind!
+mix.exs    # project description, dependencies, build config
+README.md  # teh README, every project need one
+----
+Not too much spoiler, I will get in lengthy details :) Ask me for more during the workshop!
+
+=== Run the project
+
+First Create your database, and run the migrations
+[source language='shell',subs="+quotes,+macros"]
+----
+mix ecto.create
+mix ecto.migrate
+----
+
+
+now let's open a browser and navigate to http://localhost:4000/
+
+image::first_phoenix_screen.png[]
+
+if you see something like that, you are on the right path fellow Elixirian :)
+
+== Authentication debut, User Creation 
+
+We will use another code generator.
+To generate the different form for our users management
+
+Let's go : 
+[source language='shell',subs="+quotes,+macros"]
+----
+mix phx.gen.html Accounts User users email:string password:string password_confirmation:string
+----
+
+Generated a bunch of stuff... first let's follow the instructions.
+
+place this line in lib/slang_web/router.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+resources "/users", UserController
+----
+
+
+and the run the migration
+[source language='shell',subs="+quotes,+macros"]
+----
+mix ecto.migrate
+----
+
+now let's have a look to the apps !
+
+[source language='shell',subs="+quotes,+macros"]
+----
+mix phx.server
+----
+
+Where to look for nothing changed?
+
+[source language='shell',subs="+quotes,+macros"]
+----
+mix phx.routes
+----
+You will get a list of routes.
+Let's go to http://localhost:4000/users[^] as a starting point
+
+Oh nice an empty list.
+Not surprising we might need to create some user... + 
+Continue to http://localhost:4000/users/new[^] (you have a link on the previous page) +
+keep playing with the different screen for a moment
+
+We have something that nearly looks like a user sign up process :D
+
+Ok awesome on to the next level, stop saving clear password !!! We are not Sony !!! 
+
+== Securing user sign up
+
+=== Virtual Attributes in Schema
+
+let's replace those 2 password attribute in the schema to make them virtual in lib/slang/accounts/user.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+    field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
+----
+and add a new field to store the password_hash
+[source language='elixir',subs="+quotes,+macros"]
+----
+    field :password_hash, :string
+----
+
+Ok we just changed the database table underneath.
+If you look at your postgres table there's those 2 fields, `password` and `password_confirmation`... not quite what we will store now... +
+We are going to store `password_hash` +
+Let's create a migration to modify our level
+
+ok smarter but not quite nearly done
+We need to hash the password, and for that we need a dependency
+
+[source language='shell',subs="+quotes,+macros"]
+----
+mix ecto.gen.migration change_user_table
+----
+it generate a file in the `priv/repo/migrations`
+
+let's open it +
+damn it's empty we need to find a way to do our changes... +
+take a look on this page : https://hexdocs.pm/ecto_sql/Ecto.Migration.html[^] +
+and look for something like change or alter or something
+
+once you know what to do run your migration
+[source language='shell',subs="+quotes,+macros"]
+----
+mix ecto.migrate
+----
+
+and check your table in postgres pgadmin3 or 4 or anything you want and see that it has changed :)
+
+ok if you can't make it on the migration, here it is :
+[source language='elixir',subs="+quotes,+macros"]
+----
+defmodule Slang.Repo.Migrations.Change_user_table do
+  use Ecto.Migration
+
+  def change do
+    alter table("users") do
+      add :password_hash, :text
+      remove :password
+      remove :password_confirmation
+    end
+  end
+end
+----
+
+
+
+
+
+
+
+
+
+=== Hashing the password
+
+let's open mix.exs and add a dependency to hash password
+[source language='elixir',subs="+quotes,+macros"]
+----
+  defp deps do
+    [
+    ...
+        {:comeonin, "~> 4.0"},
+        {:bcrypt_elixir, "~> 0.12"},	
+    ...
+    ]
+----
+
+now get those new dependencies and restart our dev environment
+[source language='shell',subs="+quotes,+macros"]
+----
+mix deps.get
+mix phx.server
+----
+And we are back up :D
+
+Let's hash this password !
+
+We will do that in the changeset of the schema. +
+Changesets allow filtering, casting, validation and definition of constraints when manipulating structs +
+When we want to create a record in the database we just pass a Map describing the schema through a changeset pipeline and forward that to the Repo
+The Repo is the "instance" that handles the order we pass to the database.
+
+Ok back to our little complicated changeset.
+replace the current changeset in the User Schema `lib/slang/accounts/user.ex` by this
+[source language='elixir',subs="+quotes,+macros"]
+----
+  alias Slang.Accounts.User
+
+  @doc false
+  def changeset(%User{} = user, attrs) do
+    user
+    |> cast(attrs, [:email, :password, :password_confirmation])
+    |> validate_required([:email, :password, :password_confirmation])
+    |> validate_format(:email, ~r/@/) # Check that email is valid
+    |> validate_length(:password, min: 8) # Check that password length is >= 8 
+    |> validate_confirmation(:password) # Check that password === password_confirmation
+    |> unique_constraint(:email)
+    |> put_password_hash # Add put_password_hash to changeset pipeline
+  end
+
+  defp put_password_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: pass}}
+        ->
+          put_change(changeset, :password_hash, Comeonin.Bcrypt.hashpwsalt(pass))
+      _ ->
+          changeset
+    end
+  end
+----
+What does it do ?
+
+the alias is a macro that enable the compiler to use the User Schema inside the changeset itself. It's like an import in other language
+
+- cast : will compare types of the map attributes(attrs) and the types of the User schema
+- validate_required : check that everything has been set in the map
+- validate_format : validate that the email as a @ somewhere
+- validate_length : makes it more complicated to set a password....
+- validate_confirmation : will compare the `password` and `password_confirmation`, it's a build in validator... Neat huh?
+- unique_constraint : verify that email isn't already registered
+- put_password_hash : it's our user defined function bellow
+
+put_password_hash verify that the changeset is valid with an awesome pattern match that verify things andcat same time assign password to pass +
+then use Comeonin (our new dependency) to hash the password and return a new changeset with the password_hash attributes set correctly with the hash
+
+tag after those changes is `hashing_password`
+
+pfffewwww... not a bad thing done
+
+Now we can create a user and store it's hashed password and life is good and create, except we have no screen to login !
+
+=== Login Screen 
+
+We will play with phoenix forms and understand how router forms controllers and views interact ! How supremely excited it is ! (is that too much?)
+
+Let's take a look at this http://localhost:4000/users/new[^]
+
+I'd say that it look close to a login screen...
+We'll use that as a base for our new login screen !
+
+But first let's create a url for this login page, in `lib/slang_web/router.ex`
+
+Before we change something let me give you some kind of explanations +
+How is this router working :
+
+First thing we notice is that pipeline, 
+[source language='elixir',subs="+quotes,+macros"]
+----
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+----
+
+What's a pipeline?
+As it's name let think it's a pipeline through which every request entering phoenix will transit.
+Each step of the pipeline is an elixir plug. A plug is A specification for composable modules between web applications, this is the building block of nearly every web application in Elixir.
+
+so here we will go through:
+
+- verifiy that the request speaks html
+- attach the session to the connection (req/resp in phoenix) +
+  the session is stored in a JWT token as a cookie comming from the browser. yes we are stateless by default :D
+- attach the flash message - specific part of the session to store message for the user, +
+  it's a build in mechanism in phoenix - we want to display messages to our user when an action is done during a navigation (saving a form for example)
+- protect_from_forgery is pretty explicit - it protects from forgery :)
+- secure the browser headers - another security plug to protect the users and the app.
+
+Next in the router is another pipeline used for api - we will see that later in the workshop
+
+Then comes this Scope :
+[source language='elixir',subs="+quotes,+macros"]
+----
+  scope "/", SlangWeb do
+    pipe_through :browser
+
+    get "/", PageController, :index
+
+    resources "/users", UserController
+
+  end
+----
+
+Ok the scope is where the actual routing is done
+as you can see this is where we use our browser pipeline.
+
+
+
+
+
+
+=== Managing JWT Token with Guardian
+
+
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+----
+[source language='shell',subs="+quotes,+macros"]
+----
+----
+
+[source language='shell',subs="+quotes,+macros"]
+----
+mix phx.gen.html Chat Room rooms name:string description:string
+----
+[source language='shell',subs="+quotes,+macros"]
+----
+mix phx.gen.html Chat Message messages text:string sender_id:references:users room_id:references:rooms
+----
+
+
+
+And remember, Keep Elixiring :)

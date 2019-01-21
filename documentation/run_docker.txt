@@ -1,0 +1,1 @@
+docker run --rm -it -u=1000:1000 -p35729:35729 -v /home/nico/Projects/Elixir/Workshop/:/documents/ asciidoctor/docker-asciidoctor-guard /bin/bash

@@ -1,0 +1,36 @@
+#filetype ruby
+require 'asciidoctor'
+require 'asciidoctor-pdf'
+require 'logger'
+
+
+
+def buildPDF
+  
+  #Asciidoctor.convert_file "index.adoc", backend: "pdf", header_footer: true, to_file: true, safe: :safe 
+  #puts "pdf built"
+  log = Logger.new(STDOUT)
+  Asciidoctor.convert_file "Workshop_Phoenix.adoc", backend: "pdf", header_footer: true, to_file: true, safe: :safe ,   attributes: {
+    'pdf-stylesdir' => './',
+    'pdf-style' => 'theme.yml',
+    'pdf-fontsdir' => 'fonts'
+  }
+  puts("hum\r\n")
+end
+
+
+buildPDF
+guard 'shell' do
+ 
+  watch(/.*\.adoc$/) {|m|
+    Asciidoctor.convert_file m[0], header_footer: true, to_file: true, safe: :safe
+    buildPDF
+  }
+end
+
+guard 'livereload' do
+  watch(%r{^.+\.(css|js|html|yml)$})
+end
+
+
+
