@@ -29,6 +29,8 @@ defmodule SlangWeb.Router do
 
     post "/validate_login", UserController, :validate_login
 
+    resources "/rooms", RoomController
+    resources "/messages", MessageController
 	end
 
 

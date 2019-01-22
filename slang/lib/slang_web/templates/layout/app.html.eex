@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Slang · Phoenix Framework</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+	<%= if assigns[:current_user] do %>
+		<script>window.userId = "<%= assigns.current_user.id %>";</script>
+	<% end %>
   </head>
   <body>
     <header>
       <section class="container">
         <nav role="navigation">
-
           <ul>
             <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
             <li>

@@ -3,6 +3,7 @@ defmodule SlangWeb.UserSocket do
 
   ## Channels
   # channel "room:*", SlangWeb.RoomChannel
+  channel "room:*", SlangWeb.RoomChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
