@@ -1,0 +1,562 @@
+:source-highlighter: rouge
+:highlightjsdir: highlight
+
+== Getting Started With Elixir Syntax
+
+=== Hello world
+[source language='elixir']
+----
+# hello.exs
+defmodule Greeter do
+  def greet(name) do
+    message = "Hello, " <> name <> "!"
+    IO.puts message
+  end
+end
+
+Greeter.greet("world")
+----
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+# hello.exs
+defmodule Greeter do
+  def greet(name) do
+    message = "Hello, " <> name <> "!"
+    IO.puts message
+  end
+end
+
+Greeter.greet("world")
+----
+[source language='shell',subs="+quotes,+macros"]
+----
+elixir hello.exs
+-> Hello, world!
+----
+
+=== Variables
+[source language='elixir',subs="+quotes,+macros"]
+----
+age = 23
+Maps
+user = %{
+  name: "John",
+  city: "Melbourne"
+}
+IO.puts "Hello, " <> user.name
+----
+
+=== Lists
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+users = [ "Tom", "Dick", "Harry" ]
+ 
+Enum.map(users, fn user ->
+  IO.puts "Hello " <> user
+end)
+----
+=== Piping
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+source
+|> transform(:hello)
+|> print()
+ 
+# Same as:
+print(transform(source, :hello))
+----
+These two are equivalent.
+
+
+
+=== Pattern matching
+[source language='elixir',subs="+quotes,+macros"]
+----
+user = %{name: "Tom", age: 23}
+%{name: username} = user
+----
+ 
+This sets username to "Tom".
+
+=== Pattern matching in functions
+[source language='elixir',subs="+quotes,+macros"]
+----
+def greet(%{name: username}) do
+  IO.puts "Hello, " <> username
+end
+
+user = %{name: "Tom", age: 23}
+----
+ 
+Pattern matching works in function parameters too.
+
+== Control flow
+=== If
+[source language='elixir',subs="+quotes,+macros"]
+----
+if false do
+  "This will never be seen"
+else
+  "This will"
+end
+----
+
+=== Case
+[source language='elixir',subs="+quotes,+macros"]
+----
+case {1, 2, 3} do
+  {4, 5, 6} ->
+    "This clause won't match"
+  {1, x, 3} ->
+    "This will match and bind x to 2"
+  _ ->
+   "This will match any value"
+end
+----
+
+=== Cond
+[source language='elixir',subs="+quotes,+macros"]
+----
+cond do
+  1 + 1 == 3 ->
+    "I will never be seen"
+  2 * 5 == 12 ->
+    "Me neither"
+  true ->
+    "But I will (this is essentially an else)"
+end
+----
+=== Errors
+[source language='elixir',subs="+quotes,+macros"]
+----
+try do
+  throw(:hello)
+catch
+  message -> "Got #{message}."
+after
+  IO.puts("I'm the after clause.")
+end
+----
+
+== Types
+=== Primitives
+[source language='elixir',subs="+quotes,+macros"]
+----
+nil	 ...................  Nil/null
+true / false  ..........  Boolean
+?a	....................  Integer (ASCII)
+23	....................  Integer
+3.14  ..................  Float
+'hello'  ...............  Charlist
+\<<2, 3>>  ..............  Binary
+"hello"  ...............  Binary string
+:hello  ................  Atom
+[a, b]  ................  List
+{a, b}  ................  Tuple
+%{a: "hello"}  .........  Map
+%MyStruct{a: "hello"}  .  Struct
+fn -> ... end  .........  Function
+----
+
+=== Type checks
+[source language='elixir',subs="+quotes,+macros"]
+----
+is_atom/1
+is_bitstring/1
+is_boolean/1
+is_function/1
+is_function/2
+is_integer/1
+is_float/1
+is_binary/1
+is_list/1
+is_map/1
+is_tuple/1
+is_nil/1
+is_number/1
+is_pid/1
+is_port/1
+is_reference/1
+----
+
+=== Operators
+[source language='elixir',subs="+quotes,+macros"]
+----
+left != right   # equal
+left !== right  # match
+left ++ right   # concat lists
+left <> right   # concat string/binary
+left =~ right   # regexp
+----
+
+== Modules
+=== Importing
+[source language='elixir',subs="+quotes,+macros"]
+----
+require Redux   # compiles a module
+import Redux    # compiles, and you can use without the `Redux.` prefix
+
+use Redux       # compiles, and runs Redux.__using__/1
+use Redux, async: true
+
+import Redux, only: [duplicate: 2]
+import Redux, only: :functions
+import Redux, only: :macros
+
+import Foo.{Bar, Baz}
+----
+=== Aliases
+[source language='elixir',subs="+quotes,+macros"]
+----
+alias Foo.Bar, as: Bar
+alias Foo.Bar   # same as above
+
+alias Foo.{Bar, Baz}
+----
+
+== String
+=== Functions
+[source language='elixir',subs="+quotes,+macros"]
+----
+import String
+str = "hello"
+str |> length()        # → 5
+str |> codepoints()    # → ["h", "e", "l", "l", "o"]
+str |> slice(2..-1)    # → "llo"
+str |> split(" ")      # → ["hello"]
+str |> capitalize()    # → "Hello"
+str |> match(regex)
+Inspecting objects
+inspect(object, opts \\ [])
+value |> IO.inspect()
+value |> IO.inspect(label: "value")
+----
+== Numbers
+=== Operations
+[source language='elixir',subs="+quotes,+macros"]
+----
+abs(n)
+round(n)
+rem(a, b)   # remainder (modulo)
+div(a, b)   # integer division
+----
+
+=== Float
+[source language='elixir',subs="+quotes,+macros"]
+----
+import Float
+n = 10.3
+n |> ceil()            # → 11.0
+n |> ceil(2)           # → 11.30
+n |> to_string()       # → "1.030000+e01"
+n |> to_string([decimals: 2, compact: true])
+Float.parse("34")  # → { 34.0, "" }
+----
+=== Integer
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+import Integer
+n = 12
+n |> digits()         # → [1, 2]
+n |> to_charlist()    # → '12'
+n |> to_string()      # → "12"
+n |> is_even()
+n |> is_odd()
+# Different base:
+n |> digits(2)        # → [1, 1, 0, 0]
+n |> to_charlist(2)   # → '1100'
+n |> to_string(2)     # → "1100"
+parse("12")           # → {12, ""}
+undigits([1, 2])      # → 12
+Type casting
+Float.parse("34.1")    # → {34.1, ""}
+Integer.parse("34")    # → {34, ""}
+Float.to_string(34.1)  # → "3.4100e+01"
+Float.to_string(34.1, [decimals: 2, compact: true])  # → "34.1"
+----
+== Map
+=== Defining
+[source language='elixir',subs="+quotes,+macros"]
+----
+m = %{name: "hi"}       # atom keys (:name)
+m = %{"name" => "hi"}   # string keys ("name")
+----
+=== Updating
+[source language='elixir',subs="+quotes,+macros"]
+----
+import Map
+m = %{m | name: "yo"}  # key must exist
+m |> put(:id, 2)      # → %{id: 2, name: "hi"}
+m |> put_new(:id, 2)  # only if `id` doesn't exist (`||=`)
+m |> put(:b, "Banana")
+m |> merge(%{b: "Banana"})
+m |> update(:a, &(&1 + 1))
+m |> update(:a, fun a -> a + 1 end)
+m |> get_and_update(:a, &(&1 || "default"))
+# → {old, new}
+----
+=== Deleting
+[source language='elixir',subs="+quotes,+macros"]
+----
+m |> delete(:name)  # → %{}
+m |> pop(:name)     # → {"John", %{}}
+----
+=== Reading
+[source language='elixir',subs="+quotes,+macros"]
+----
+m |> get(:id)       # → 1
+m |> keys()         # → [:id, :name]
+m |> values()       # → [1, "hi"]
+m |> to_list()      # → [id: 1, name: "hi"]
+                    # → [{:id, 1}, {:name, "hi"}]
+----
+=== Deep
+[source language='elixir',subs="+quotes,+macros"]
+----
+put_in(map, [:b, :c], "Banana")
+put_in(map[:b][:c], "Banana")    # via macros
+get_and_update_in(users, ["john", :age], &{&1, &1 + 1})
+----
+=== Constructing from lists
+[source language='elixir',subs="+quotes,+macros"]
+----
+Map.new([{:b, 1}, {:a, 2}])
+Map.new([a: 1, b: 2])
+Map.new([:a, :b], fn x -> {x, x} end)  # → %{a: :a, b: :b}
+----
+== List
+[source language='elixir',subs="+quotes,+macros"]
+----
+import List
+l = [ 1, 2, 3, 4 ]
+l = l ++ [5]         # push (append)
+l = [ 0 | list ]     # unshift (prepend)
+l |> first()
+l |> last()
+l |> flatten()
+l |> flatten(tail)
+----
+Also see Enum.
+
+== Enum
+=== Usage
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+import Enum
+list = [:a, :b, :c]
+list |> at(0)         # → :a
+list |> count()       # → 3
+list |> empty?()      # → false
+list |> any?()        # → true
+list |> concat([:d])  # → [:a, :b, :c, :d]
+----
+Also, consider streams instead.
+
+=== Map/reduce
+[source language='elixir',subs="+quotes,+macros"]
+----
+list |> reduce(fn)
+list |> reduce(acc, fn)
+list |> map(fn)
+list |> reject(fn)
+list |> any?(fn)
+list |> empty?(fn)
+[1, 2, 3, 4]
+|> Enum.reduce(0, fn(x, acc) -> x + acc end)
+----
+== Tuple
+=== Tuples
+[source language='elixir',subs="+quotes,+macros"]
+----
+import Tuple
+t = { :a, :b }
+t |> elem(1)    # like tuple[1]
+t |> put_elem(index, value)
+t |> tuple_size()
+----
+=== Keyword lists
+[source language='elixir',subs="+quotes,+macros"]
+----
+list = [{ :name, "John" }, { :age, 15 }]
+list[:name]
+# For string-keyed keyword lists
+list = [{"size", 2}, {"type", "shoe"}]
+List.keyfind(list, "size", 0)  # → {"size", 2}
+----
+== Functions
+=== Lambdas
+[source language='elixir',subs="+quotes,+macros"]
+----
+square = fn n -> n*n end
+square.(20)
+----
+=== & syntax
+[source language='elixir',subs="+quotes,+macros"]
+----
+square = &(&1 * &1)
+square.(20)
+
+square = &Math.square/1
+----
+=== Running
+[source language='elixir',subs="+quotes,+macros"]
+----
+fun.(args)
+apply(fun, args)
+apply(module, fun, args)
+----
+
+=== Function heads
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+def join(a, b \\ nil)
+def join(a, b) when is_nil(b) do: a
+def join(a, b) do: a <> b
+----
+== Structs
+=== Structs
+[source language='elixir',subs="+quotes,+macros"]
+----
+defmodule User do
+  defstruct name: "", age: nil
+end
+
+%User{name: "John", age: 20}
+
+%User{}.struct  # → User
+----
+See: Structs
+
+== Protocols
+
+=== Defining protocols
+[source language='elixir',subs="+quotes,+macros"]
+----
+defprotocol Blank do
+  @doc "Returns true if data is considered blank/empty"
+  def blank?(data)
+end
+defimpl Blank, for: List do
+  def blank?([]), do: true
+  def blank?(_), do: false
+end
+
+Blank.blank?([])  # → true
+----
+that's how you define contracts with Elixir
+
+
+=== Any
+[source language='elixir',subs="+quotes,+macros"]
+----
+defimpl Blank, for: Any do ... end
+
+defmodule User do
+  @derive Blank     # Falls back to Any
+  defstruct name: ""
+end
+----
+=== Examples
+[source language='elixir',subs="+quotes,+macros"]
+----
+Enumerable and Enum.map()
+Inspect and inspect()
+----
+
+== Comprehensions
+=== For
+[source language='elixir',subs="+quotes,+macros"]
+----
+for n <- [1, 2, 3, 4], do: n * n
+for n <- 1..4, do: n * n
+for {key, val} <- %{a: 10, b: 20}, do: val
+# → [10, 20]
+for {key, val} <- %{a: 10, b: 20}, into: %{}, do: {key, val*val}
+----
+=== Conditions
+[source language='elixir',subs="+quotes,+macros"]
+----
+for n <- 1..10, rem(n, 2) == 0, do: n
+# → [2, 4, 6, 8, 10]
+----
+
+=== Complex
+[source language='elixir',subs="+quotes,+macros"]
+----
+for dir <- dirs,
+    file <- File.ls!(dir),          # nested comprehension
+    path = Path.join(dir, file),    # invoked
+    File.regular?(path) do          # condition
+  IO.puts(file)
+end
+----
+
+== Misc
+=== Metaprogramming
+[source language='elixir',subs="+quotes,+macros"]
+----
+__MODULE__
+__MODULE__.__info__
+
+@after_compile __MODULE__
+def __before_compile__(env)
+def __after_compile__(env, _bytecode)
+def __using__(opts)    # invoked on `use`
+
+@on_definition {__MODULE__, :on_def}
+def on_def(_env, kind, name, args, guards, body)
+
+@on_load :load_check
+def load_check
+----
+=== Regexp
+[source language='elixir',subs="+quotes,+macros"]
+----
+exp = ~r/hello/
+exp = ~r/hello/i
+"hello world" =~ exp
+----
+
+
+=== Sigils
+[source language='elixir',subs="+quotes,+macros"]
+----
+~r/regexp/
+~w(list of strings)
+~s|strings with #{interpolation} and \x20 escape codes|
+~S|no interpolation and no escapes|
+~c(charlist)
+----
+Allowed chars: / | " ' ( [ { < """. See: Sigils
+
+=== Type specs
+[source language='elixir',subs="+quotes,+macros"]
+----
+@spec round(number) :: integer
+
+@type number_with_remark :: {number, String.t}
+@spec add(number, number) :: number_with_remark
+----
+checked with dialyzer. See: Typespecs
+
+=== Behaviours
+[source language='elixir',subs="+quotes,+macros"]
+----
+defmodule Parser do
+  @callback parse(String.t) :: any
+  @callback extensions() :: [String.t]
+end
+defmodule JSONParser do
+  @behaviour Parser
+
+  def parse(str), do: # ... parse JSON
+  def extensions, do: ["json"]
+end
+----
+See: Module

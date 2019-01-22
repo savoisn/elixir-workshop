@@ -1011,7 +1011,7 @@ User is authenticated, saved in the session for easy use, and it's displayed for
 
 All this noodling is done, the worst part is over, now it will be more fun !
 
-Once again, if you've been bored about all those copy paste to do in your code, just checkout the branch `user_authentication_finished`
+Once again, if you've been bored about all those copy paste to do in your app code, just checkout the branch `user_authentication_finished` copy and paste is somewhere else and attack the next chapter that will be a lot more fun !
 
 
 
