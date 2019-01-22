@@ -126,4 +126,22 @@ let's you connect to your database :D
 
 == If you have question please raise an Issue on this github repository
 
+== Doc for the workshop
+
+=== Intro to Elixir
+in github : 
+https://github.com/savoisn/elixir-workshop/blob/master/documentation/Language_Intro.adoc
+
+as html : 
+http://htmlpreview.github.io/?https://github.com/savoisn/elixir-workshop/blob/master/documentation/Language_Intro.html
+
+=== Elixir Tennis Kata
+https://github.com/savoisn/tennis-kata-elixir
+
+=== Phoenix Workshop
+in github :
+https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Phoenix.html
+
+as html : 
+http://htmlpreview.github.io/?https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Phoenix.html
 
