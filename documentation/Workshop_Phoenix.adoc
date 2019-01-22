@@ -811,9 +811,37 @@ there's 2 part to the config :
 - config.exs witch is the default / main config, 
 - dev.exs / prod.exs which is a loaded by the config.exs based on the MIX_ENV environment variable
 
+in order to use guardian we need to give it some implementation
 
+.lib/guardian.ex
+----
+defmodule Slang.Guardian do
+  use Guardian, otp_app: :slang
 
-let's call a login function in our `form_sign_in` on success of password check like that :
+  def subject_for_token(user, _claims) do
+    sub = to_string(user.id)
+    {:ok, sub}
+  end
+
+  def subject_for_token(_, _) do
+    {:error, :reason_for_error}
+  end
+
+  def resource_from_claims(claims) do
+    id = claims["sub"]
+    resource = Slang.Accounts.get_user!(id)
+    {:ok,  resource}
+  end
+
+  def resource_from_claims(_claims) do
+    {:error, :reason_for_error}
+  end
+end
+----
+
+Now Guardian is configured and ready to be used.
+
+Let's call a login function in our `form_sign_in` on success of password check like that :
 
 .lib/slang/accounts/accounts.ex
 [source language='elixir',subs="+quotes,+macros"]
@@ -822,7 +850,7 @@ let's call a login function in our `form_sign_in` on success of password check l
   def form_sign_in(email, password, conn) do
     case email_password_auth(email, password) do
       {:ok, user} ->
-        {:ok, login(conn, user)}
+        {:ok, *login(conn, user)*}
       _ ->
         {:error, :unauthorized}
     end
@@ -830,17 +858,161 @@ let's call a login function in our `form_sign_in` on success of password check l
   ...
 ----
 
-
-
 .lib/slang/accounts/accounts.ex
 [source language='elixir',subs="+quotes,+macros"]
 ----
   def login(conn, user) do
-    IO.inspect conn
     conn 
       |> Guardian.Plug.sign_in(user)
   end
 ----
+
+the `Guardin.Plug.sign_in(user)` returns a connection context that contains the token with our user Principale in it.
+Now the JWT token containing the session will also hold the user definition in the encoded payload.
+
+We now need to unwrap this data and make it available in the session of the app.
+
+We will do that by add a new pipeline to the scope.
+Creating your own pipeline to get data from the JWT Token into our session
+
+.lib/slang_web/current_user.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+defmodule SlangWeb.CurrentUser do
+  import Plug.Conn
+
+  def init(opts), do: opts
+
+  def call(conn, _opts) do
+    current_user = Guardian.Plug.current_resource(conn)
+
+    # Assigns the current user if it exists, and whether it is an admin or not
+    assign(conn, :current_user, current_user)
+  end
+
+end
+----
+Creates a Plug, that only job is to look into the connection and extract the current_user using Guardian helper function `current_resource`
+
+
+Now on to the pipeline
+
+.lib/slang_web/auth_browser_pipeline.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+defmodule SlangWeb.Guardian.AuthBrowserPipeline do
+  use Guardian.Plug.Pipeline, otp_app: :Slang,
+  module: Slang.Guardian,
+  error_handler: Slang.AuthErrorHandler
+
+  plug Guardian.Plug.VerifySession
+  plug Guardian.Plug.LoadResource, allow_blank: true
+  plug SlangWeb.CurrentUser
+end
+----
+
+We use others Guardian helper function to :
+- Verifiy the Session in the request
+- Load the resources from header and store them in the Elixir Connection
+- and decode the CurrentUser into the connection also.
+
+Using our new pipeline in the router
+
+.lib/slang_web/router.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  pipeline :with_session do
+		plug SlangWeb.Guardian.AuthBrowserPipeline
+	end
+----
+
+add it to the scope 
+
+[source language='elixir',subs="+quotes,+macros"]
+----
+  scope "/", SlangWeb do
+    pipe_through [:browser, :with_session]
+----
+
+Our logged in user can now be retrieved from the connection
+
+all we need is a way to see it.
+
+Let's improve our main page and handle the login / logout
+If user is Logged In, display it's email, and a logout link.
+But if user is not logged In, display a login Link.
+
+Once again we will modify the header of our main page :
+
+.lib/slang_web/templates/layout/app.html.eex
+[source language='elixir',subs="+quotes,+macros"]
+----
+        <nav role="navigation">
+          <ul>
+**            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
+            <li>
+              <%= if assigns[:current_user] do %>
+                <%= link "Logout", to: Routes.user_path(@conn, :logout), method: "post" %>
+                <%= assigns.current_user.email %>
+                <%= assigns.current_user.id %>
+              <% else %>
+                _<%= link "Login", to: Routes.user_path(@conn, :login) %>_
+                not connected
+              <% end %>**
+            </li>
+          </ul>
+        </nav>
+----
+
+All we had previously is the link for Login (in italic)
+Now we have the logic based on the presence or not of the `:current_user` in the `assigns` map (that's the way to check if a key is present in a map `my_map[:key_to_check]`)
+
+Oh look a logout route !
+Since we have not defined it previously Phoenix will complain (vehemently with that) about that route note present in the router !
+
+let's add a POST route for the logout
+
+.lib/slang_web/router.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  scope "/", SlangWeb do
+    ...
+ 		post "/logout", UserController, :logout
+    ...
+  end
+----
+
+Add the Action in the controller :
+
+.lib/slang_web/controllers/user_controller.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  def logout(conn, _params) do
+    conn 
+    |> Accounts.logout
+    |> redirect(to: Routes.page_path(conn, :index))
+  end
+----
+
+Once again the controller will just orchestrate and delegate the action to our domain-like accounts
+
+.lib/slang/accounts/accounts.ex
+[source language='elixir',subs="+quotes,+macros"]
+----
+  def logout(conn) do
+    conn 
+    |> Guardian.Plug.sign_out
+  end
+----
+
+And we are all set !
+
+User is authenticated, saved in the session for easy use, and it's displayed for the user convenience.
+
+All this noodling is done, the worst part is over, now it will be more fun !
+
+Once again, if you've been bored about all those copy paste to do in your code, just checkout the branch `user_authentication_finished`
+
 
 
 [source language='elixir',subs="+quotes,+macros"]

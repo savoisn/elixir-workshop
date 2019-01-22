@@ -1440,7 +1440,40 @@ there&#8217;s 2 part to the config :</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>let&#8217;s call a login function in our <code>form_sign_in</code> on success of password check like that :</p>
+<p>in order to use guardian we need to give it some implementation</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/guardian.ex</div>
+<div class="content">
+<pre>defmodule Slang.Guardian do
+  use Guardian, otp_app: :slang
+
+  def subject_for_token(user, _claims) do
+    sub = to_string(user.id)
+    {:ok, sub}
+  end
+
+  def subject_for_token(_, _) do
+    {:error, :reason_for_error}
+  end
+
+  def resource_from_claims(claims) do
+    id = claims["sub"]
+    resource = Slang.Accounts.get_user!(id)
+    {:ok,  resource}
+  end
+
+  def resource_from_claims(_claims) do
+    {:error, :reason_for_error}
+  end
+end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now Guardian is configured and ready to be used.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s call a login function in our <code>form_sign_in</code> on success of password check like that :</p>
 </div>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
@@ -1449,7 +1482,7 @@ there&#8217;s 2 part to the config :</p>
   def form_sign_in(email, password, conn) do
     case email_password_auth(email, password) do
       {:ok, user} -&gt;
-        {:ok, login(conn, user)}
+        {:ok, <strong>login(conn, user)</strong>}
       _ -&gt;
         {:error, :unauthorized}
     end
@@ -1461,11 +1494,177 @@ there&#8217;s 2 part to the config :</p>
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
 <pre>  def login(conn, user) do
-    IO.inspect conn
     conn
       |&gt; Guardian.Plug.sign_in(user)
   end</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>the <code>Guardin.Plug.sign_in(user)</code> returns a connection context that contains the token with our user Principale in it.
+Now the JWT token containing the session will also hold the user definition in the encoded payload.</p>
+</div>
+<div class="paragraph">
+<p>We now need to unwrap this data and make it available in the session of the app.</p>
+</div>
+<div class="paragraph">
+<p>We will do that by add a new pipeline to the scope.
+Creating your own pipeline to get data from the JWT Token into our session</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/current_user.ex</div>
+<div class="content">
+<pre>defmodule SlangWeb.CurrentUser do
+  import Plug.Conn
+
+  def init(opts), do: opts
+
+  def call(conn, _opts) do
+    current_user = Guardian.Plug.current_resource(conn)
+
+    # Assigns the current user if it exists, and whether it is an admin or not
+    assign(conn, :current_user, current_user)
+  end
+
+end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creates a Plug, that only job is to look into the connection and extract the current_user using Guardian helper function <code>current_resource</code></p>
+</div>
+<div class="paragraph">
+<p>Now on to the pipeline</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/auth_browser_pipeline.ex</div>
+<div class="content">
+<pre>defmodule SlangWeb.Guardian.AuthBrowserPipeline do
+  use Guardian.Plug.Pipeline, otp_app: :Slang,
+  module: Slang.Guardian,
+  error_handler: Slang.AuthErrorHandler
+
+  plug Guardian.Plug.VerifySession
+  plug Guardian.Plug.LoadResource, allow_blank: true
+  plug SlangWeb.CurrentUser
+end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We use others Guardian helper function to :
+- Verifiy the Session in the request
+- Load the resources from header and store them in the Elixir Connection
+- and decode the CurrentUser into the connection also.</p>
+</div>
+<div class="paragraph">
+<p>Using our new pipeline in the router</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre>  pipeline :with_session do
+		plug SlangWeb.Guardian.AuthBrowserPipeline
+	end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>add it to the scope</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  scope "/", SlangWeb do
+    pipe_through [:browser, :with_session]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Our logged in user can now be retrieved from the connection</p>
+</div>
+<div class="paragraph">
+<p>all we need is a way to see it.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s improve our main page and handle the login / logout
+If user is Logged In, display it&#8217;s email, and a logout link.
+But if user is not logged In, display a login Link.</p>
+</div>
+<div class="paragraph">
+<p>Once again we will modify the header of our main page :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/layout/app.html.eex</div>
+<div class="content">
+<pre>        &lt;nav role="navigation"&gt;
+          &lt;ul&gt;
+<strong>            &lt;li&gt;&lt;a href="https://hexdocs.pm/phoenix/overview.html"&gt;Get Started&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;
+              &lt;%= if assigns[:current_user] do %&gt;
+                &lt;%= link "Logout", to: Routes.user_path(@conn, :logout), method: "post" %&gt;
+                &lt;%= assigns.current_user.email %&gt;
+                &lt;%= assigns.current_user.id %&gt;
+              &lt;% else %&gt;
+                <em>&lt;%= link "Login", to: Routes.user_path(@conn, :login) %&gt;</em>
+                not connected
+              &lt;% end %&gt;</strong>
+            &lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/nav&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All we had previously is the link for Login (in italic)
+Now we have the logic based on the presence or not of the <code>:current_user</code> in the <code>assigns</code> map (that&#8217;s the way to check if a key is present in a map <code>my_map[:key_to_check]</code>)</p>
+</div>
+<div class="paragraph">
+<p>Oh look a logout route !
+Since we have not defined it previously Phoenix will complain (vehemently with that) about that route note present in the router !</p>
+</div>
+<div class="paragraph">
+<p>let&#8217;s add a POST route for the logout</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre>  scope "/", SlangWeb do
+    ...
+ 		post "/logout", UserController, :logout
+    ...
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the Action in the controller :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/controllers/user_controller.ex</div>
+<div class="content">
+<pre>  def logout(conn, _params) do
+    conn
+    |&gt; Accounts.logout
+    |&gt; redirect(to: Routes.page_path(conn, :index))
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once again the controller will just orchestrate and delegate the action to our domain-like accounts</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang/accounts/accounts.ex</div>
+<div class="content">
+<pre>  def logout(conn) do
+    conn
+    |&gt; Guardian.Plug.sign_out
+  end</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And we are all set !</p>
+</div>
+<div class="paragraph">
+<p>User is authenticated, saved in the session for easy use, and it&#8217;s displayed for the user convenience.</p>
+</div>
+<div class="paragraph">
+<p>All this noodling is done, the worst part is over, now it will be more fun !</p>
+</div>
+<div class="paragraph">
+<p>Once again, if you&#8217;ve been bored about all those copy paste to do in your code, just checkout the branch <code>user_authentication_finished</code></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1496,7 +1695,7 @@ there&#8217;s 2 part to the config :</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-21 20:18:27 UTC
+Last updated 2019-01-22 06:11:13 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">
