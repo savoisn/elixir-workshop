@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="_hello_world">Hello world</h3>
 <div class="listingblock">
 <div class="content">
-<pre># hello.exs
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"># hello.exs
 defmodule Greeter do
   def greet(name) do
     message = "Hello, " &lt;&gt; name &lt;&gt; "!"
@@ -449,12 +449,12 @@ defmodule Greeter do
   end
 end
 
-Greeter.greet("world")</pre>
+Greeter.greet("world")</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre># hello.exs
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"># hello.exs
 defmodule Greeter do
   def greet(name) do
     message = "Hello, " &lt;&gt; name &lt;&gt; "!"
@@ -462,13 +462,13 @@ defmodule Greeter do
   end
 end
 
-Greeter.greet("world")</pre>
+Greeter.greet("world")</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>elixir hello.exs
--&gt; Hello, world!</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">elixir hello.exs
+-&gt; Hello, world!</code></pre>
 </div>
 </div>
 </div>
@@ -476,13 +476,13 @@ Greeter.greet("world")</pre>
 <h3 id="_variables">Variables</h3>
 <div class="listingblock">
 <div class="content">
-<pre>age = 23
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">age = 23
 Maps
 user = %{
   name: "John",
   city: "Melbourne"
 }
-IO.puts "Hello, " &lt;&gt; user.name</pre>
+IO.puts "Hello, " &lt;&gt; user.name</code></pre>
 </div>
 </div>
 </div>
@@ -490,11 +490,11 @@ IO.puts "Hello, " &lt;&gt; user.name</pre>
 <h3 id="_lists">Lists</h3>
 <div class="listingblock">
 <div class="content">
-<pre>users = [ "Tom", "Dick", "Harry" ]
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">users = [ "Tom", "Dick", "Harry" ]
 
 Enum.map(users, fn user -&gt;
   IO.puts "Hello " &lt;&gt; user
-end)</pre>
+end)</code></pre>
 </div>
 </div>
 </div>
@@ -502,12 +502,12 @@ end)</pre>
 <h3 id="_piping">Piping</h3>
 <div class="listingblock">
 <div class="content">
-<pre>source
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">source
 |&gt; transform(:hello)
 |&gt; print()
 
 # Same as:
-print(transform(source, :hello))</pre>
+print(transform(source, :hello))</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -518,8 +518,8 @@ print(transform(source, :hello))</pre>
 <h3 id="_pattern_matching">Pattern matching</h3>
 <div class="listingblock">
 <div class="content">
-<pre>user = %{name: "Tom", age: 23}
-%{name: username} = user</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">user = %{name: "Tom", age: 23}
+%{name: username} = user</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -530,11 +530,11 @@ print(transform(source, :hello))</pre>
 <h3 id="_pattern_matching_in_functions">Pattern matching in functions</h3>
 <div class="listingblock">
 <div class="content">
-<pre>def greet(%{name: username}) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">def greet(%{name: username}) do
   IO.puts "Hello, " &lt;&gt; username
 end
 
-user = %{name: "Tom", age: 23}</pre>
+user = %{name: "Tom", age: 23}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -550,11 +550,11 @@ user = %{name: "Tom", age: 23}</pre>
 <h3 id="_if">If</h3>
 <div class="listingblock">
 <div class="content">
-<pre>if false do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">if false do
   "This will never be seen"
 else
   "This will"
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -562,14 +562,14 @@ end</pre>
 <h3 id="_case">Case</h3>
 <div class="listingblock">
 <div class="content">
-<pre>case {1, 2, 3} do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">case {1, 2, 3} do
   {4, 5, 6} -&gt;
     "This clause won't match"
   {1, x, 3} -&gt;
     "This will match and bind x to 2"
   _ -&gt;
    "This will match any value"
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -577,14 +577,14 @@ end</pre>
 <h3 id="_cond">Cond</h3>
 <div class="listingblock">
 <div class="content">
-<pre>cond do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">cond do
   1 + 1 == 3 -&gt;
     "I will never be seen"
   2 * 5 == 12 -&gt;
     "Me neither"
   true -&gt;
     "But I will (this is essentially an else)"
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -592,13 +592,13 @@ end</pre>
 <h3 id="_errors">Errors</h3>
 <div class="listingblock">
 <div class="content">
-<pre>try do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">try do
   throw(:hello)
 catch
   message -&gt; "Got #{message}."
 after
   IO.puts("I'm the after clause.")
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -611,7 +611,7 @@ end</pre>
 <h3 id="_primitives">Primitives</h3>
 <div class="listingblock">
 <div class="content">
-<pre>nil	 ...................  Nil/null
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">nil	 ...................  Nil/null
 true / false  ..........  Boolean
 ?a	....................  Integer (ASCII)
 23	....................  Integer
@@ -624,7 +624,7 @@ true / false  ..........  Boolean
 {a, b}  ................  Tuple
 %{a: "hello"}  .........  Map
 %MyStruct{a: "hello"}  .  Struct
-fn -&gt; ... end  .........  Function</pre>
+fn -&gt; ... end  .........  Function</code></pre>
 </div>
 </div>
 </div>
@@ -632,7 +632,7 @@ fn -&gt; ... end  .........  Function</pre>
 <h3 id="_type_checks">Type checks</h3>
 <div class="listingblock">
 <div class="content">
-<pre>is_atom/1
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">is_atom/1
 is_bitstring/1
 is_boolean/1
 is_function/1
@@ -647,7 +647,7 @@ is_nil/1
 is_number/1
 is_pid/1
 is_port/1
-is_reference/1</pre>
+is_reference/1</code></pre>
 </div>
 </div>
 </div>
@@ -655,11 +655,11 @@ is_reference/1</pre>
 <h3 id="_operators">Operators</h3>
 <div class="listingblock">
 <div class="content">
-<pre>left != right   # equal
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">left != right   # equal
 left !== right  # match
 left ++ right   # concat lists
 left &lt;&gt; right   # concat string/binary
-left =~ right   # regexp</pre>
+left =~ right   # regexp</code></pre>
 </div>
 </div>
 </div>
@@ -672,7 +672,7 @@ left =~ right   # regexp</pre>
 <h3 id="_importing">Importing</h3>
 <div class="listingblock">
 <div class="content">
-<pre>require Redux   # compiles a module
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">require Redux   # compiles a module
 import Redux    # compiles, and you can use without the <code>Redux.</code> prefix
 
 use Redux       # compiles, and runs Redux.<em>using</em>/1
@@ -682,7 +682,7 @@ import Redux, only: [duplicate: 2]
 import Redux, only: :functions
 import Redux, only: :macros
 
-import Foo.{Bar, Baz}</pre>
+import Foo.{Bar, Baz}</code></pre>
 </div>
 </div>
 </div>
@@ -690,10 +690,10 @@ import Foo.{Bar, Baz}</pre>
 <h3 id="_aliases">Aliases</h3>
 <div class="listingblock">
 <div class="content">
-<pre>alias Foo.Bar, as: Bar
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">alias Foo.Bar, as: Bar
 alias Foo.Bar   # same as above
 
-alias Foo.{Bar, Baz}</pre>
+alias Foo.{Bar, Baz}</code></pre>
 </div>
 </div>
 </div>
@@ -706,7 +706,7 @@ alias Foo.{Bar, Baz}</pre>
 <h3 id="_functions">Functions</h3>
 <div class="listingblock">
 <div class="content">
-<pre>import String
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import String
 str = "hello"
 str |&gt; length()        # → 5
 str |&gt; codepoints()    # → ["h", "e", "l", "l", "o"]
@@ -717,7 +717,7 @@ str |&gt; match(regex)
 Inspecting objects
 inspect(object, opts \\ [])
 value |&gt; IO.inspect()
-value |&gt; IO.inspect(label: "value")</pre>
+value |&gt; IO.inspect(label: "value")</code></pre>
 </div>
 </div>
 </div>
@@ -730,10 +730,10 @@ value |&gt; IO.inspect(label: "value")</pre>
 <h3 id="_operations">Operations</h3>
 <div class="listingblock">
 <div class="content">
-<pre>abs(n)
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">abs(n)
 round(n)
 rem(a, b)   # remainder (modulo)
-div(a, b)   # integer division</pre>
+div(a, b)   # integer division</code></pre>
 </div>
 </div>
 </div>
@@ -741,13 +741,13 @@ div(a, b)   # integer division</pre>
 <h3 id="_float">Float</h3>
 <div class="listingblock">
 <div class="content">
-<pre>import Float
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import Float
 n = 10.3
 n |&gt; ceil()            # → 11.0
 n |&gt; ceil(2)           # → 11.30
 n |&gt; to_string()       # → "1.030000+e01"
 n |&gt; to_string([decimals: 2, compact: true])
-Float.parse("34")  # → { 34.0, "" }</pre>
+Float.parse("34")  # → { 34.0, "" }</code></pre>
 </div>
 </div>
 </div>
@@ -755,7 +755,7 @@ Float.parse("34")  # → { 34.0, "" }</pre>
 <h3 id="_integer">Integer</h3>
 <div class="listingblock">
 <div class="content">
-<pre>import Integer
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import Integer
 n = 12
 n |&gt; digits()         # → [1, 2]
 n |&gt; to_charlist()    # → '12'
@@ -772,7 +772,7 @@ Type casting
 Float.parse("34.1")    # → {34.1, ""}
 Integer.parse("34")    # → {34, ""}
 Float.to_string(34.1)  # → "3.4100e+01"
-Float.to_string(34.1, [decimals: 2, compact: true])  # → "34.1"</pre>
+Float.to_string(34.1, [decimals: 2, compact: true])  # → "34.1"</code></pre>
 </div>
 </div>
 </div>
@@ -785,8 +785,8 @@ Float.to_string(34.1, [decimals: 2, compact: true])  # → "34.1"</pre>
 <h3 id="_defining">Defining</h3>
 <div class="listingblock">
 <div class="content">
-<pre>m = %{name: "hi"}       # atom keys (:name)
-m = %{"name" =&gt; "hi"}   # string keys ("name")</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">m = %{name: "hi"}       # atom keys (:name)
+m = %{"name" =&gt; "hi"}   # string keys ("name")</code></pre>
 </div>
 </div>
 </div>
@@ -794,7 +794,7 @@ m = %{"name" =&gt; "hi"}   # string keys ("name")</pre>
 <h3 id="_updating">Updating</h3>
 <div class="listingblock">
 <div class="content">
-<pre>import Map
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import Map
 m = %{m | name: "yo"}  # key must exist
 m |&gt; put(:id, 2)      # → %{id: 2, name: "hi"}
 m |&gt; put_new(:id, 2)  # only if <code>id</code> doesn't exist (<code>||=</code>)
@@ -803,7 +803,7 @@ m |&gt; merge(%{b: "Banana"})
 m |&gt; update(:a, &amp;(&amp;1 + 1))
 m |&gt; update(:a, fun a -&gt; a + 1 end)
 m |&gt; get_and_update(:a, &amp;(&amp;1 || "default"))
-# → {old, new}</pre>
+# → {old, new}</code></pre>
 </div>
 </div>
 </div>
@@ -811,8 +811,8 @@ m |&gt; get_and_update(:a, &amp;(&amp;1 || "default"))
 <h3 id="_deleting">Deleting</h3>
 <div class="listingblock">
 <div class="content">
-<pre>m |&gt; delete(:name)  # → %{}
-m |&gt; pop(:name)     # → {"John", %{}}</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">m |&gt; delete(:name)  # → %{}
+m |&gt; pop(:name)     # → {"John", %{}}</code></pre>
 </div>
 </div>
 </div>
@@ -820,11 +820,11 @@ m |&gt; pop(:name)     # → {"John", %{}}</pre>
 <h3 id="_reading">Reading</h3>
 <div class="listingblock">
 <div class="content">
-<pre>m |&gt; get(:id)       # → 1
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">m |&gt; get(:id)       # → 1
 m |&gt; keys()         # → [:id, :name]
 m |&gt; values()       # → [1, "hi"]
 m |&gt; to_list()      # → [id: 1, name: "hi"]
-                    # → [{:id, 1}, {:name, "hi"}]</pre>
+                    # → [{:id, 1}, {:name, "hi"}]</code></pre>
 </div>
 </div>
 </div>
@@ -832,9 +832,9 @@ m |&gt; to_list()      # → [id: 1, name: "hi"]
 <h3 id="_deep">Deep</h3>
 <div class="listingblock">
 <div class="content">
-<pre>put_in(map, [:b, :c], "Banana")
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">put_in(map, [:b, :c], "Banana")
 put_in(map[:b][:c], "Banana")    # via macros
-get_and_update_in(users, ["john", :age], &amp;{&amp;1, &amp;1 + 1})</pre>
+get_and_update_in(users, ["john", :age], &amp;{&amp;1, &amp;1 + 1})</code></pre>
 </div>
 </div>
 </div>
@@ -842,9 +842,9 @@ get_and_update_in(users, ["john", :age], &amp;{&amp;1, &amp;1 + 1})</pre>
 <h3 id="_constructing_from_lists">Constructing from lists</h3>
 <div class="listingblock">
 <div class="content">
-<pre>Map.new([{:b, 1}, {:a, 2}])
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">Map.new([{:b, 1}, {:a, 2}])
 Map.new([a: 1, b: 2])
-Map.new([:a, :b], fn x -&gt; {x, x} end)  # → %{a: :a, b: :b}</pre>
+Map.new([:a, :b], fn x -&gt; {x, x} end)  # → %{a: :a, b: :b}</code></pre>
 </div>
 </div>
 </div>
@@ -855,14 +855,14 @@ Map.new([:a, :b], fn x -&gt; {x, x} end)  # → %{a: :a, b: :b}</pre>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>import List
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import List
 l = [ 1, 2, 3, 4 ]
 l = l ++ [5]         # push (append)
 l = [ 0 | list ]     # unshift (prepend)
 l |&gt; first()
 l |&gt; last()
 l |&gt; flatten()
-l |&gt; flatten(tail)</pre>
+l |&gt; flatten(tail)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -877,13 +877,13 @@ l |&gt; flatten(tail)</pre>
 <h3 id="_usage">Usage</h3>
 <div class="listingblock">
 <div class="content">
-<pre>import Enum
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import Enum
 list = [:a, :b, :c]
 list |&gt; at(0)         # → :a
 list |&gt; count()       # → 3
 list |&gt; empty?()      # → false
 list |&gt; any?()        # → true
-list |&gt; concat([:d])  # → [:a, :b, :c, :d]</pre>
+list |&gt; concat([:d])  # → [:a, :b, :c, :d]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -894,14 +894,14 @@ list |&gt; concat([:d])  # → [:a, :b, :c, :d]</pre>
 <h3 id="_mapreduce">Map/reduce</h3>
 <div class="listingblock">
 <div class="content">
-<pre>list |&gt; reduce(fn)
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">list |&gt; reduce(fn)
 list |&gt; reduce(acc, fn)
 list |&gt; map(fn)
 list |&gt; reject(fn)
 list |&gt; any?(fn)
 list |&gt; empty?(fn)
 [1, 2, 3, 4]
-|&gt; Enum.reduce(0, fn(x, acc) -&gt; x + acc end)</pre>
+|&gt; Enum.reduce(0, fn(x, acc) -&gt; x + acc end)</code></pre>
 </div>
 </div>
 </div>
@@ -914,11 +914,11 @@ list |&gt; empty?(fn)
 <h3 id="_tuples">Tuples</h3>
 <div class="listingblock">
 <div class="content">
-<pre>import Tuple
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">import Tuple
 t = { :a, :b }
 t |&gt; elem(1)    # like tuple[1]
 t |&gt; put_elem(index, value)
-t |&gt; tuple_size()</pre>
+t |&gt; tuple_size()</code></pre>
 </div>
 </div>
 </div>
@@ -926,11 +926,11 @@ t |&gt; tuple_size()</pre>
 <h3 id="_keyword_lists">Keyword lists</h3>
 <div class="listingblock">
 <div class="content">
-<pre>list = [{ :name, "John" }, { :age, 15 }]
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">list = [{ :name, "John" }, { :age, 15 }]
 list[:name]
 # For string-keyed keyword lists
 list = [{"size", 2}, {"type", "shoe"}]
-List.keyfind(list, "size", 0)  # → {"size", 2}</pre>
+List.keyfind(list, "size", 0)  # → {"size", 2}</code></pre>
 </div>
 </div>
 </div>
@@ -943,8 +943,8 @@ List.keyfind(list, "size", 0)  # → {"size", 2}</pre>
 <h3 id="_lambdas">Lambdas</h3>
 <div class="listingblock">
 <div class="content">
-<pre>square = fn n -&gt; n*n end
-square.(20)</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">square = fn n -&gt; n*n end
+square.(20)</code></pre>
 </div>
 </div>
 </div>
@@ -952,10 +952,10 @@ square.(20)</pre>
 <h3 id="_syntax">&amp; syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>square = &amp;(&amp;1 * &amp;1)
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">square = &amp;(&amp;1 * &amp;1)
 square.(20)
 
-square = &amp;Math.square/1</pre>
+square = &amp;Math.square/1</code></pre>
 </div>
 </div>
 </div>
@@ -963,9 +963,9 @@ square = &amp;Math.square/1</pre>
 <h3 id="_running">Running</h3>
 <div class="listingblock">
 <div class="content">
-<pre>fun.(args)
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">fun.(args)
 apply(fun, args)
-apply(module, fun, args)</pre>
+apply(module, fun, args)</code></pre>
 </div>
 </div>
 </div>
@@ -973,9 +973,9 @@ apply(module, fun, args)</pre>
 <h3 id="_function_heads">Function heads</h3>
 <div class="listingblock">
 <div class="content">
-<pre>def join(a, b \\ nil)
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">def join(a, b \\ nil)
 def join(a, b) when is_nil(b) do: a
-def join(a, b) do: a &lt;&gt; b</pre>
+def join(a, b) do: a &lt;&gt; b</code></pre>
 </div>
 </div>
 </div>
@@ -988,13 +988,13 @@ def join(a, b) do: a &lt;&gt; b</pre>
 <h3 id="_structs_2">Structs</h3>
 <div class="listingblock">
 <div class="content">
-<pre>defmodule User do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule User do
   defstruct name: "", age: nil
 end
 
 %User{name: "John", age: 20}
 
-%User{}.struct  # → User</pre>
+%User{}.struct  # → User</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1010,7 +1010,7 @@ end
 <h3 id="_defining_protocols">Defining protocols</h3>
 <div class="listingblock">
 <div class="content">
-<pre>defprotocol Blank do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defprotocol Blank do
   @doc "Returns true if data is considered blank/empty"
   def blank?(data)
 end
@@ -1019,7 +1019,7 @@ defimpl Blank, for: List do
   def blank?(_), do: false
 end
 
-Blank.blank?([])  # → true</pre>
+Blank.blank?([])  # → true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1030,12 +1030,12 @@ Blank.blank?([])  # → true</pre>
 <h3 id="_any">Any</h3>
 <div class="listingblock">
 <div class="content">
-<pre>defimpl Blank, for: Any do ... end
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defimpl Blank, for: Any do ... end
 
 defmodule User do
   @derive Blank     # Falls back to Any
   defstruct name: ""
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -1043,8 +1043,8 @@ end</pre>
 <h3 id="_examples">Examples</h3>
 <div class="listingblock">
 <div class="content">
-<pre>Enumerable and Enum.map()
-Inspect and inspect()</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">Enumerable and Enum.map()
+Inspect and inspect()</code></pre>
 </div>
 </div>
 </div>
@@ -1057,11 +1057,11 @@ Inspect and inspect()</pre>
 <h3 id="_for">For</h3>
 <div class="listingblock">
 <div class="content">
-<pre>for n &lt;- [1, 2, 3, 4], do: n * n
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">for n &lt;- [1, 2, 3, 4], do: n * n
 for n &lt;- 1..4, do: n * n
 for {key, val} &lt;- %{a: 10, b: 20}, do: val
 # → [10, 20]
-for {key, val} &lt;- %{a: 10, b: 20}, into: %{}, do: {key, val*val}</pre>
+for {key, val} &lt;- %{a: 10, b: 20}, into: %{}, do: {key, val*val}</code></pre>
 </div>
 </div>
 </div>
@@ -1069,8 +1069,8 @@ for {key, val} &lt;- %{a: 10, b: 20}, into: %{}, do: {key, val*val}</pre>
 <h3 id="_conditions">Conditions</h3>
 <div class="listingblock">
 <div class="content">
-<pre>for n &lt;- 1..10, rem(n, 2) == 0, do: n
-# → [2, 4, 6, 8, 10]</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">for n &lt;- 1..10, rem(n, 2) == 0, do: n
+# → [2, 4, 6, 8, 10]</code></pre>
 </div>
 </div>
 </div>
@@ -1078,12 +1078,12 @@ for {key, val} &lt;- %{a: 10, b: 20}, into: %{}, do: {key, val*val}</pre>
 <h3 id="_complex">Complex</h3>
 <div class="listingblock">
 <div class="content">
-<pre>for dir &lt;- dirs,
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">for dir &lt;- dirs,
     file &lt;- File.ls!(dir),          # nested comprehension
     path = Path.join(dir, file),    # invoked
     File.regular?(path) do          # condition
   IO.puts(file)
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -1096,7 +1096,7 @@ end</pre>
 <h3 id="_metaprogramming">Metaprogramming</h3>
 <div class="listingblock">
 <div class="content">
-<pre><em>MODULE</em>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"><em>MODULE</em>
 <em>MODULE</em>.<em>info</em>
 
 @after_compile <em>MODULE</em>
@@ -1108,7 +1108,7 @@ def <em>using</em>(opts)    # invoked on <code>use</code>
 def on_def(_env, kind, name, args, guards, body)
 
 @on_load :load_check
-def load_check</pre>
+def load_check</code></pre>
 </div>
 </div>
 </div>
@@ -1116,9 +1116,9 @@ def load_check</pre>
 <h3 id="_regexp">Regexp</h3>
 <div class="listingblock">
 <div class="content">
-<pre>exp = ~r/hello/
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">exp = ~r/hello/
 exp = ~r/hello/i
-"hello world" =~ exp</pre>
+"hello world" =~ exp</code></pre>
 </div>
 </div>
 </div>
@@ -1126,11 +1126,11 @@ exp = ~r/hello/i
 <h3 id="_sigils">Sigils</h3>
 <div class="listingblock">
 <div class="content">
-<pre>~r/regexp/
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">~r/regexp/
 ~w(list of strings)
 ~s|strings with #{interpolation} and \x20 escape codes|
 ~S|no interpolation and no escapes|
-~c(charlist)</pre>
+~c(charlist)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1141,10 +1141,10 @@ exp = ~r/hello/i
 <h3 id="_type_specs">Type specs</h3>
 <div class="listingblock">
 <div class="content">
-<pre>@spec round(number) :: integer
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">@spec round(number) :: integer
 
 @type number_with_remark :: {number, String.t}
-@spec add(number, number) :: number_with_remark</pre>
+@spec add(number, number) :: number_with_remark</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1155,7 +1155,7 @@ exp = ~r/hello/i
 <h3 id="_behaviours">Behaviours</h3>
 <div class="listingblock">
 <div class="content">
-<pre>defmodule Parser do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule Parser do
   @callback parse(String.t) :: any
   @callback extensions() :: [String.t]
 end
@@ -1164,7 +1164,7 @@ defmodule JSONParser do
 
   def parse(str), do: # ... parse JSON
   def extensions, do: ["json"]
-end</pre>
+end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1176,8 +1176,11 @@ end</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-22 08:20:27 UTC
+Last updated 2019-01-22 11:04:32 UTC
 </div>
 </div>
+<link rel="stylesheet" href="highlight/styles/github.min.css">
+<script src="highlight/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
 </body>
 </html>

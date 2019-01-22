@@ -484,7 +484,7 @@ The name of the app will be used in Module name, so if you want to be able to co
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix phx.new <strong><em>folder_name</em></strong> --app slang</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.new <strong><em>folder_name</em></strong> --app slang</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -518,8 +518,8 @@ README.md  # teh README, every project need one</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix ecto.create
-mix ecto.migrate</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix ecto.create
+mix ecto.migrate</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -548,7 +548,7 @@ To generate the different form for our users management</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix phx.gen.html Accounts User users email:string password:string password_confirmation:string</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.gen.html Accounts User users email:string password:string password_confirmation:string</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -560,13 +560,13 @@ To generate the different form for our users management</p>
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>  scope "/", SlangWeb do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  scope "/", SlangWeb do
     pipe_through :browser
 
     get "/", PageController, :index
 
     <strong>resources "/users", UserController</strong>
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -574,7 +574,7 @@ To generate the different form for our users management</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix ecto.migrate</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix ecto.migrate</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -582,7 +582,7 @@ To generate the different form for our users management</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix phx.server</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.server</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -590,7 +590,7 @@ To generate the different form for our users management</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix phx.routes</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.routes</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -622,8 +622,8 @@ keep playing with the different screen for a moment</p>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/user.ex</div>
 <div class="content">
-<pre>    field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">    field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -632,7 +632,7 @@ keep playing with the different screen for a moment</p>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/user.ex</div>
 <div class="content">
-<pre>    field :password_hash, :string</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">    field :password_hash, :string</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -647,7 +647,7 @@ We need to hash the password, and for that we need a dependency</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix ecto.gen.migration change_user_table</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix ecto.gen.migration change_user_table</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -664,7 +664,7 @@ and look for something like change or alter or something</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix ecto.migrate</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix ecto.migrate</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -676,7 +676,7 @@ and look for something like change or alter or something</p>
 <div class="listingblock">
 <div class="title">priv/repo/migrations/_timestamp_change_user_table.exs</div>
 <div class="content">
-<pre>defmodule Slang.Repo.Migrations.Change_user_table do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule Slang.Repo.Migrations.Change_user_table do
   use Ecto.Migration
 
   def change do
@@ -686,7 +686,7 @@ and look for something like change or alter or something</p>
       remove :password_confirmation
     end
   end
-end</pre>
+end</code></pre>
 </div>
 </div>
 </div>
@@ -698,13 +698,13 @@ end</pre>
 <div class="listingblock">
 <div class="title">mix.exs</div>
 <div class="content">
-<pre>  defp deps do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  defp deps do
     [
     ...
         {:comeonin, "~&gt; 4.0"},
         {:bcrypt_elixir, "~&gt; 0.12"},
     ...
-    ]</pre>
+    ]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -712,8 +712,8 @@ end</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix deps.get
-mix phx.server</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix deps.get
+mix phx.server</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -735,7 +735,7 @@ replace the current changeset in the User Schema <code>lib/slang/accounts/user.e
 <div class="listingblock">
 <div class="title">lib/slang/accounts/user.ex</div>
 <div class="content">
-<pre>defmodule
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule
 
   ...
 
@@ -763,7 +763,7 @@ replace the current changeset in the User Schema <code>lib/slang/accounts/user.e
       _ -&gt;
           changeset
     end
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -836,13 +836,13 @@ How is this router working :</p>
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>  pipeline :browser do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -883,14 +883,14 @@ it&#8217;s a build in mechanism in phoenix - we want to display messages to our 
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>  scope "/", SlangWeb do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  scope "/", SlangWeb do
     pipe_through :browser
 
     get "/", PageController, :index
 
     resources "/users", UserController
 
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -901,7 +901,7 @@ So for a connection to be handled by this scope it will have to comply with the 
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>    get "/", PageController, :index</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">    get "/", PageController, :index</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -911,7 +911,7 @@ If the request is a GET it will be handled by the <code>index</code> function Pa
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>    resources "/users", UserController</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">    resources "/users", UserController</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -921,14 +921,14 @@ it&#8217;s the equivalent of all this:</p>
 <div class="listingblock">
 <div class="title">mix phx.routes</div>
 <div class="content">
-<pre>user_path  GET     /users           SlangWeb.UserController :index
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">user_path  GET     /users           SlangWeb.UserController :index
 user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
 user_path  GET     /users/new       SlangWeb.UserController :new
 user_path  GET     /users/:id       SlangWeb.UserController :show
 user_path  POST    /users           SlangWeb.UserController :create
 user_path  PATCH   /users/:id       SlangWeb.UserController :update
            PUT     /users/:id       SlangWeb.UserController :update
-user_path  DELETE  /users/:id       SlangWeb.UserController :delete</pre>
+user_path  DELETE  /users/:id       SlangWeb.UserController :delete</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -939,7 +939,7 @@ I want my login page to be at the root of my webapp : <a href="http://localhost:
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>    get "/login", UserController, :login</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">    get "/login", UserController, :login</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -958,10 +958,10 @@ you can try the URL in your browser right now, but it will fail since the UserCo
 <div class="listingblock">
 <div class="title">lib/slang_web/controller/user_controller.ex</div>
 <div class="content">
-<pre>  def login(conn, _params) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
     render(conn, "new.html", changeset: changeset)
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -970,10 +970,10 @@ you can try the URL in your browser right now, but it will fail since the UserCo
 <div class="listingblock">
 <div class="title">lib/slang_web/controller/user_controller.ex</div>
 <div class="content">
-<pre>  def login(conn, _params) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
     render(conn, "login.html", changeset: changeset)
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -998,7 +998,7 @@ When Phoenix generate the template, it generate only one form and reuse for all 
 <div class="listingblock">
 <div class="title">lib/slang_web/templates/user/login.html.eex</div>
 <div class="content">
-<pre>&lt;%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %&gt;</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">&lt;%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1007,7 +1007,7 @@ When Phoenix generate the template, it generate only one form and reuse for all 
 <div class="listingblock">
 <div class="title">lib/slang_web/templates/user/form_login.html.eex</div>
 <div class="content">
-<pre>&lt;%= form_for @changeset, @action, fn f -&gt; %&gt;
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">&lt;%= form_for @changeset, @action, fn f -&gt; %&gt;
   &lt;%= if @changeset.action do %&gt;
     &lt;div class="alert alert-danger"&gt;
       &lt;p&gt;Oops, something went wrong! Please check the errors below.&lt;/p&gt;
@@ -1025,7 +1025,7 @@ When Phoenix generate the template, it generate only one form and reuse for all 
   &lt;div&gt;
     &lt;%= submit "Login" %&gt;
   &lt;/div&gt;
-&lt;% end %&gt;</pre>
+&lt;% end %&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1035,14 +1035,14 @@ the user will not find the login URL by itself, we need to create a link for tha
 <div class="listingblock">
 <div class="title">lib/slang_web/templates/layout/app.html.eex</div>
 <div class="content">
-<pre>        &lt;nav role="navigation"&gt;
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">        &lt;nav role="navigation"&gt;
           &lt;ul&gt;
             &lt;li&gt;&lt;a href="https://hexdocs.pm/phoenix/overview.html"&gt;Get Started&lt;/a&gt;&lt;/li&gt;
             <strong>&lt;li&gt;
               &lt;%= link "New Login", to: Routes.user_path(@conn, :login) %&gt;
             &lt;/li&gt;</strong>
           &lt;/ul&gt;
-        &lt;/nav&gt;</pre>
+        &lt;/nav&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1052,7 +1052,7 @@ But where is it comming from? How do I know ?</p>
 <div class="listingblock">
 <div class="title">mix phx.routes</div>
 <div class="content">
-<pre>-&gt; % mix phx.routes
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">-&gt; % mix phx.routes
 page_path  GET     /                SlangWeb.PageController :index
 user_path  GET     /users           SlangWeb.UserController :index
 user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
@@ -1062,7 +1062,7 @@ user_path  POST    /users           SlangWeb.UserController :create
 user_path  PATCH   /users/:id       SlangWeb.UserController :update
            PUT     /users/:id       SlangWeb.UserController :update
 user_path  DELETE  /users/:id       SlangWeb.UserController :delete
-<strong>user_path  GET     /login           SlangWeb.UserController :login</strong></pre>
+<strong>user_path  GET     /login           SlangWeb.UserController :login</strong></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1078,10 +1078,10 @@ it&#8217;s where you can find the function we are using in the template.</p>
 <div class="listingblock">
 <div class="title">lib/slang_web/controllers/user_controller.ex</div>
 <div class="content">
-<pre>  def index(conn, _params) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def index(conn, _params) do
     users = Accounts.list_users()
     render(conn, "index.html", users: users)
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1093,7 +1093,7 @@ it&#8217;s where you can find the function we are using in the template.</p>
 <div class="listingblock">
 <div class="title">lib/slang_web/templates/user/index.html.eex</div>
 <div class="content">
-<pre>&lt;%= for user &lt;- <strong>@users</strong> do %&gt;
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">&lt;%= for user &lt;- <strong>@users</strong> do %&gt;
     &lt;tr&gt;
       &lt;td&gt;&lt;%= user.email %&gt;&lt;/td&gt;
       &lt;td&gt;&lt;%= user.password %&gt;&lt;/td&gt;
@@ -1105,7 +1105,7 @@ it&#8217;s where you can find the function we are using in the template.</p>
         &lt;%= link "Delete", to: Routes.user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"] %&gt;
       &lt;/td&gt;
     &lt;/tr&gt;
-&lt;% end %&gt;</pre>
+&lt;% end %&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1118,14 +1118,14 @@ you can also see how to use the <code>for</code> loop in Elixir with the backwar
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>      &lt;section class="container"&gt;
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">      &lt;section class="container"&gt;
 
         ...
 
         &lt;%= link to: Routes.page_path(@conn, :index), class: "phx-logo" do %&gt;
           &lt;img src="&lt;%= Routes.static_path(@conn, "/images/phoenix.png") %&gt;" alt="Phoenix Framework Logo"/&gt;
         &lt;% end %&gt;
-      &lt;/section&gt;</pre>
+      &lt;/section&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1156,7 +1156,7 @@ Same as before, we used the <code>Routes</code> helper function to redirect to t
 <div class="listingblock">
 <div class="title">lib/slang_web/templates/user/form_login.eex</div>
 <div class="content">
-<pre>&lt;%= form_for @changeset, @action, fn f -&gt; %&gt;
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">&lt;%= form_for @changeset, @action, fn f -&gt; %&gt;
   &lt;%= if @changeset.action do %&gt;
     &lt;div class="alert alert-danger"&gt;
       &lt;p&gt;Oops, something went wrong! Please check the errors below.&lt;/p&gt;
@@ -1174,7 +1174,7 @@ Same as before, we used the <code>Routes</code> helper function to redirect to t
   &lt;div&gt;
     &lt;%= submit "Login" %&gt;
   &lt;/div&gt;
-&lt;% end %&gt;</pre>
+&lt;% end %&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1191,10 +1191,10 @@ and the function as a parameter is simply a way to like the html tag with the el
 <div class="listingblock">
 <div class="title">lib/slang_web/controllers/user_controller.ex</div>
 <div class="content">
-<pre>  def login(conn, _params) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
     render(conn, "login.html", changeset: changeset)
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1203,11 +1203,11 @@ and the function as a parameter is simply a way to like the html tag with the el
 <div class="listingblock">
 <div class="title">/lib/slang_web/templates/user/login.html.eex</div>
 <div class="content">
-<pre>&lt;h1&gt;Login&lt;/h1&gt;
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">&lt;h1&gt;Login&lt;/h1&gt;
 
 &lt;%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %&gt;
 
-&lt;span&gt;&lt;%= link "Back", to: Routes.user_path(@conn, :index) %&gt;&lt;/span&gt;</pre>
+&lt;span&gt;&lt;%= link "Back", to: Routes.user_path(@conn, :index) %&gt;&lt;/span&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1237,12 +1237,12 @@ Looking at the <code>mix phx.routes</code> it&#8217;s a POST which make sense si
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>  scope "/", SlangWeb do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  scope "/", SlangWeb do
 
     ...
 
     post "/validate_login", UserController, :validate_login
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1254,7 +1254,7 @@ Looking at the <code>mix phx.routes</code> it&#8217;s a POST which make sense si
 <div class="listingblock">
 <div class="title">lib/slang_web/controllers/user_controller.ex</div>
 <div class="content">
-<pre>  def validate_login(conn, %{"user" =&gt; login_params}) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def validate_login(conn, %{"user" =&gt; login_params}) do
     case Accounts.form_sign_in(login_params["email"], login_params["password"], conn) do
       {:ok, conn} -&gt;
         conn
@@ -1266,7 +1266,7 @@ Looking at the <code>mix phx.routes</code> it&#8217;s a POST which make sense si
         |&gt; put_flash(:error, "Couldn't log you in")
         |&gt; render("login.html", changeset: changeset)
     end
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1281,10 +1281,10 @@ if form_sign_in returns an error, user stays on login page, and an error is disp
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>defmodule Slang.Accounts do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule Slang.Accounts do
 
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
-  ...</pre>
+  ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1293,7 +1293,7 @@ if form_sign_in returns an error, user stays on login page, and an error is disp
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  ...
   defp get_by_email(email) when is_binary(email) do
     case Repo.get_by(User, email: email) do
       nil -&gt;
@@ -1302,7 +1302,7 @@ if form_sign_in returns an error, user stays on login page, and an error is disp
       user -&gt;
         {:ok, user}
     end
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1322,7 +1322,7 @@ if no user is found it return an error.</p>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  ...
 
   def form_sign_in(email, password, conn) do
     case email_password_auth(email, password) do
@@ -1333,7 +1333,7 @@ if no user is found it return an error.</p>
     end
   end
 
-  ...</pre>
+  ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1342,14 +1342,14 @@ if no user is found it return an error.</p>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  ...
 
   defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
     with {:ok, user} &lt;- get_user_by_email(email),
     do: verify_password(password, user)
   end
 
-  ...</pre>
+  ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1359,7 +1359,7 @@ if it does, it calls another function to verify the password</p>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  ...
 
   defp verify_password(password, %User{} = user) when is_binary(password) do
     if checkpw(password, user.password_hash) do
@@ -1369,7 +1369,7 @@ if it does, it calls another function to verify the password</p>
      end
   end
 
-  ...</pre>
+  ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1405,12 +1405,12 @@ That&#8217;s the job of Guardian</p>
 <div class="listingblock">
 <div class="title">mix.exs</div>
 <div class="content">
-<pre>  defp deps do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  defp deps do
     [
     ...
       {:guardian, "~&gt; 1.2.1"},
     ...
-    ]</pre>
+    ]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1419,10 +1419,10 @@ That&#8217;s the job of Guardian</p>
 <div class="listingblock">
 <div class="title">config/config.exs</div>
 <div class="content">
-<pre># Guardian config
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"># Guardian config
 config :slang, Slang.Guardian,
        issuer: "slang",
-       secret_key: "a2rLR0uj4W1nQ3h3kTCONdx/jGtKlnrHvu0AUv7EwLLthDFTvsjXNL3SRZbPd7x/"</pre>
+       secret_key: "a2rLR0uj4W1nQ3h3kTCONdx/jGtKlnrHvu0AUv7EwLLthDFTvsjXNL3SRZbPd7x/"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1445,15 +1445,15 @@ there&#8217;s 2 part to the config :</p>
 <div class="listingblock">
 <div class="title">lib/guardian.ex</div>
 <div class="content">
-<pre>defmodule Slang.Guardian do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule Slang.Guardian do
   use Guardian, otp_app: :slang
 
-  def subject_for_token(user, _claims) do
+  def subject_for_token(user, <em>claims) do
     sub = to_string(user.id)
     {:ok, sub}
   end
 
-  def subject_for_token(_, _) do
+  def subject_for_token(</em>, _) do
     {:error, :reason_for_error}
   end
 
@@ -1466,7 +1466,7 @@ there&#8217;s 2 part to the config :</p>
   def resource_from_claims(_claims) do
     {:error, :reason_for_error}
   end
-end</pre>
+end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1478,7 +1478,7 @@ end</pre>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  ...
   def form_sign_in(email, password, conn) do
     case email_password_auth(email, password) do
       {:ok, user} -&gt;
@@ -1487,16 +1487,16 @@ end</pre>
         {:error, :unauthorized}
     end
   end
-  ...</pre>
+  ...</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  def login(conn, user) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def login(conn, user) do
     conn
       |&gt; Guardian.Plug.sign_in(user)
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1513,7 +1513,7 @@ Creating your own pipeline to get data from the JWT Token into our session</p>
 <div class="listingblock">
 <div class="title">lib/slang_web/current_user.ex</div>
 <div class="content">
-<pre>defmodule SlangWeb.CurrentUser do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule SlangWeb.CurrentUser do
   import Plug.Conn
 
   def init(opts), do: opts
@@ -1525,7 +1525,7 @@ Creating your own pipeline to get data from the JWT Token into our session</p>
     assign(conn, :current_user, current_user)
   end
 
-end</pre>
+end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1537,7 +1537,7 @@ end</pre>
 <div class="listingblock">
 <div class="title">lib/slang_web/auth_browser_pipeline.ex</div>
 <div class="content">
-<pre>defmodule SlangWeb.Guardian.AuthBrowserPipeline do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule SlangWeb.Guardian.AuthBrowserPipeline do
   use Guardian.Plug.Pipeline, otp_app: :Slang,
   module: Slang.Guardian,
   error_handler: Slang.AuthErrorHandler
@@ -1545,7 +1545,7 @@ end</pre>
   plug Guardian.Plug.VerifySession
   plug Guardian.Plug.LoadResource, allow_blank: true
   plug SlangWeb.CurrentUser
-end</pre>
+end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1560,9 +1560,9 @@ end</pre>
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>  pipeline :with_session do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  pipeline :with_session do
 		plug SlangWeb.Guardian.AuthBrowserPipeline
-	end</pre>
+	end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1570,8 +1570,8 @@ end</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>  scope "/", SlangWeb do
-    pipe_through [:browser, :with_session]</pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  scope "/", SlangWeb do
+    pipe_through [:browser, :with_session]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1591,7 +1591,7 @@ But if user is not logged In, display a login Link.</p>
 <div class="listingblock">
 <div class="title">lib/slang_web/templates/layout/app.html.eex</div>
 <div class="content">
-<pre>        &lt;nav role="navigation"&gt;
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">        &lt;nav role="navigation"&gt;
           &lt;ul&gt;
 <strong>            &lt;li&gt;&lt;a href="https://hexdocs.pm/phoenix/overview.html"&gt;Get Started&lt;/a&gt;&lt;/li&gt;
             &lt;li&gt;
@@ -1605,7 +1605,7 @@ But if user is not logged In, display a login Link.</p>
               &lt;% end %&gt;</strong>
             &lt;/li&gt;
           &lt;/ul&gt;
-        &lt;/nav&gt;</pre>
+        &lt;/nav&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1622,11 +1622,11 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 <div class="listingblock">
 <div class="title">lib/slang_web/router.ex</div>
 <div class="content">
-<pre>  scope "/", SlangWeb do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  scope "/", SlangWeb do
     ...
  		post "/logout", UserController, :logout
     ...
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1635,11 +1635,11 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 <div class="listingblock">
 <div class="title">lib/slang_web/controllers/user_controller.ex</div>
 <div class="content">
-<pre>  def logout(conn, _params) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def logout(conn, _params) do
     conn
     |&gt; Accounts.logout
     |&gt; redirect(to: Routes.page_path(conn, :index))
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1648,10 +1648,10 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 <div class="listingblock">
 <div class="title">lib/slang/accounts/accounts.ex</div>
 <div class="content">
-<pre>  def logout(conn) do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  def logout(conn) do
     conn
     |&gt; Guardian.Plug.sign_out
-  end</pre>
+  end</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1668,22 +1668,22 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre></pre>
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre></pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell"></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix phx.gen.html Chat Room rooms name:string description:string</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.gen.html Chat Room rooms name:string description:string</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>mix phx.gen.html Chat Message messages text:string sender_id:references:users room_id:references:rooms</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.gen.html Chat Message messages text:string sender_id:references:users room_id:references:rooms</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1695,7 +1695,7 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-22 06:59:37 UTC
+Last updated 2019-01-22 12:23:45 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">

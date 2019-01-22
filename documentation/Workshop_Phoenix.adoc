@@ -22,7 +22,7 @@ NOTE: Let's dig in
 We will build an App called Slang, Sla for Slack, and ng because why not!?! +
 The name of the app will be used in Module name, so if you want to be able to copy paste easily use `slang` as App name
 
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix phx.new *_folder_name_* --app slang
 ----
@@ -50,7 +50,7 @@ Not too much spoiler, I will get in lengthy details :) Ask me for more during th
 === Run the project
 
 First Create your database, and run the migrations
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix ecto.create
 mix ecto.migrate
@@ -69,7 +69,7 @@ We will use another code generator.
 To generate the different form for our users management
 
 Let's go : 
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix phx.gen.html Accounts User users email:string password:string password_confirmation:string
 ----
@@ -79,7 +79,7 @@ Generated a bunch of stuff... first let's follow the instructions.
 place this line in lib/slang_web/router.ex
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   scope "/", SlangWeb do
     pipe_through :browser
@@ -93,21 +93,21 @@ place this line in lib/slang_web/router.ex
 
 and the run the migration
 
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix ecto.migrate
 ----
 
 now let's have a look to the apps !
 
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix phx.server
 ----
 
 Where to look for nothing changed?
 
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix phx.routes
 ----
@@ -130,7 +130,7 @@ Ok awesome on to the next level, stop saving clear password !!! We are not Sony 
 let's replace those 2 password attribute in the schema to make them virtual in lib/slang/accounts/user.ex
 
 .lib/slang/accounts/user.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
@@ -138,7 +138,7 @@ let's replace those 2 password attribute in the schema to make them virtual in l
 and add a new field to store the password_hash
 
 .lib/slang/accounts/user.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
     field :password_hash, :string
 ----
@@ -151,7 +151,7 @@ Let's create a migration to modify our level
 ok smarter but not quite nearly done
 We need to hash the password, and for that we need a dependency
 
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix ecto.gen.migration change_user_table
 ----
@@ -163,7 +163,7 @@ take a look on this page : https://hexdocs.pm/ecto_sql/Ecto.Migration.html[^] +
 and look for something like change or alter or something
 
 once you know what to do run your migration
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix ecto.migrate
 ----
@@ -173,7 +173,7 @@ and check your table in postgres pgadmin3 or 4 or anything you want and see that
 ok if you can't make it on the migration, here it is :
 
 .priv/repo/migrations/_timestamp_change_user_table.exs
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 defmodule Slang.Repo.Migrations.Change_user_table do
   use Ecto.Migration
@@ -201,7 +201,7 @@ end
 let's open mix.exs and add a dependency to hash password
 
 .mix.exs
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   defp deps do
     [
@@ -213,7 +213,7 @@ let's open mix.exs and add a dependency to hash password
 ----
 
 now get those new dependencies and restart our dev environment
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix deps.get
 mix phx.server
@@ -231,7 +231,7 @@ Ok back to our little complicated changeset.
 replace the current changeset in the User Schema `lib/slang/accounts/user.ex` by this
 
 .lib/slang/accounts/user.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 
 defmodule
@@ -302,7 +302,7 @@ How is this router working :
 First thing we notice is that pipeline, 
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   pipeline :browser do
     plug :accepts, ["html"]
@@ -332,7 +332,7 @@ Next in the router is another pipeline used for api - we will see that later in 
 Then comes this Scope :
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   scope "/", SlangWeb do
     pipe_through :browser
@@ -349,7 +349,7 @@ As you can see this is where we use our browser pipeline. +
 So for a connection to be handled by this scope it will have to comply with the pipeline :browser
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
     get "/", PageController, :index
 ----
@@ -357,7 +357,7 @@ Defines a endpoint at the root of the webapp +
 If the request is a GET it will be handled by the `index` function PageController refered to as the atom :index
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
     resources "/users", UserController
 ----
@@ -366,7 +366,7 @@ resources define a complete set of urls for CRUD operation on entity
 it's the equivalent of all this:
 
 .mix phx.routes
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 user_path  GET     /users           SlangWeb.UserController :index
 user_path  GET     /users/:id/edit  SlangWeb.UserController :edit
@@ -383,7 +383,7 @@ let's try to create a new route to our login page.
 I want my login page to be at the root of my webapp : http://localhost:4000/login[^]
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
     get "/login", UserController, :login
 ----
@@ -398,7 +398,7 @@ We have a lot of function in there... each one is handling an operation from the
 Now we really need this login action to be implemented, since we want to copy the new page, let's also copy the new function from our UserController and rename it login 
 
 .lib/slang_web/controller/user_controller.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
@@ -409,7 +409,7 @@ Now we really need this login action to be implemented, since we want to copy th
 if we point to the `new.html` template, phoenix is happily showing you the new form, but we want a login form... so :
 
 .lib/slang_web/controller/user_controller.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
@@ -432,7 +432,7 @@ When Phoenix generate the template, it generate only one form and reuse for all 
 Since we are not aiming for reusability just copy the `lib/slang_web/templates/user/form.html.eex` to `lib/slang_web/templates/user/form_login.html.eex` and update the login template to reflect the change
 
 .lib/slang_web/templates/user/login.html.eex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 <%= render "form_login.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %>
 ----
@@ -440,7 +440,7 @@ Since we are not aiming for reusability just copy the `lib/slang_web/templates/u
 and the `lib/slang_web/templates/user/form_login.html.eex`
 
 .lib/slang_web/templates/user/form_login.html.eex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 <%= form_for @changeset, @action, fn f -> %>
   <%= if @changeset.action do %>
@@ -467,7 +467,7 @@ Last but not least for this part, +
 the user will not find the login URL by itself, we need to create a link for that on the main page !
 
 .lib/slang_web/templates/layout/app.html.eex
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
         <nav role="navigation">
           <ul>
@@ -483,7 +483,7 @@ so we define a link with the phoenix helper function link, and we link to a `Rou
 But where is it comming from? How do I know ?
 
 .mix phx.routes
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 -> % mix phx.routes
 page_path  GET     /                SlangWeb.PageController :index
@@ -506,7 +506,7 @@ The `@conn` parameter is the way we refer to arguments passed to the template, s
 We can see how the param are passed to the template in the controller
 
 .lib/slang_web/controllers/user_controller.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def index(conn, _params) do
     users = Accounts.list_users()
@@ -518,7 +518,7 @@ we will pass the list of users in a Map with the key `users`
 it is used in the template like this :
 
 .lib/slang_web/templates/user/index.html.eex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 <%= for user <- *@users* do %>
     <tr>
@@ -542,7 +542,7 @@ you can also see how to use the `for` loop in Elixir with the backward arrow `<-
 For cosmetic reason I want that when I click on the Elixir Phoenix Logo I am redirected to the index of the app, instead of the Phoenix web page.
 
 
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
       <section class="container">
 
@@ -572,7 +572,7 @@ Let's do that right now !
 first we defined a `form_login` but what does it do?
 
 .lib/slang_web/templates/user/form_login.eex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 <%= form_for @changeset, @action, fn f -> %>
   <%= if @changeset.action do %>
@@ -604,7 +604,7 @@ and the function as a parameter is simply a way to like the html tag with the el
 But the action seems to come from a controller. Let's look at the `user_controller`
 
 .lib/slang_web/controllers/user_controller.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def login(conn, _params) do
     changeset = Accounts.change_user(%User{})
@@ -614,7 +614,7 @@ But the action seems to come from a controller. Let's look at the `user_controll
 Hum nothing here... except we are rendering a login.html, let's look at this template
 
 ./lib/slang_web/templates/user/login.html.eex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 <h1>Login</h1>
 
@@ -644,7 +644,7 @@ Let's create a new Route in the router for that.
 
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   scope "/", SlangWeb do
 
@@ -658,7 +658,7 @@ nothing new, a post to a controller function
 in the controller let's create that function
 
 .lib/slang_web/controllers/user_controller.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def validate_login(conn, %{"user" => login_params}) do
     case Accounts.form_sign_in(login_params["email"], login_params["password"], conn) do 
@@ -682,7 +682,7 @@ if form_sign_in returns an error, user stays on login page, and an error is disp
 
 first we need a function the get a user from the database by it's email adress
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 defmodule Slang.Accounts do
 
@@ -692,7 +692,7 @@ defmodule Slang.Accounts do
 first import the cryptographic function that we will use `checkpw` and `dummy_checkpw`
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   ...
   defp get_by_email(email) when is_binary(email) do
@@ -717,7 +717,7 @@ if no user is found it return an error.
 ok now we need to create this form_sign_in function in the Accounts module
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   ...
 
@@ -736,7 +736,7 @@ it delegate the password checkin to the email_password_auth function
 
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   ...
 
@@ -752,7 +752,7 @@ call the get_user_by_email function to retrieve the entity from the database
 if it does, it calls another function to verify the password
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   ...
 
@@ -784,7 +784,7 @@ first add the guardian dependency:
 
 
 .mix.exs
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   defp deps do
     [
@@ -797,7 +797,7 @@ first add the guardian dependency:
 then configure it:
 
 .config/config.exs
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 # Guardian config
 config :slang, Slang.Guardian,
@@ -814,6 +814,7 @@ there's 2 part to the config :
 in order to use guardian we need to give it some implementation
 
 .lib/guardian.ex
+[source,elixir,subs="+quotes,+macros"]
 ----
 defmodule Slang.Guardian do
   use Guardian, otp_app: :slang
@@ -844,7 +845,7 @@ Now Guardian is configured and ready to be used.
 Let's call a login function in our `form_sign_in` on success of password check like that :
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   ...
   def form_sign_in(email, password, conn) do
@@ -859,7 +860,7 @@ Let's call a login function in our `form_sign_in` on success of password check l
 ----
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def login(conn, user) do
     conn 
@@ -876,7 +877,7 @@ We will do that by add a new pipeline to the scope.
 Creating your own pipeline to get data from the JWT Token into our session
 
 .lib/slang_web/current_user.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 defmodule SlangWeb.CurrentUser do
   import Plug.Conn
@@ -898,7 +899,7 @@ Creates a Plug, that only job is to look into the connection and extract the cur
 Now on to the pipeline
 
 .lib/slang_web/auth_browser_pipeline.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
 defmodule SlangWeb.Guardian.AuthBrowserPipeline do
   use Guardian.Plug.Pipeline, otp_app: :Slang,
@@ -919,7 +920,7 @@ We use others Guardian helper function to :
 Using our new pipeline in the router
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   pipeline :with_session do
 		plug SlangWeb.Guardian.AuthBrowserPipeline
@@ -928,7 +929,7 @@ Using our new pipeline in the router
 
 add it to the scope 
 
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   scope "/", SlangWeb do
     pipe_through [:browser, :with_session]
@@ -945,7 +946,7 @@ But if user is not logged In, display a login Link.
 Once again we will modify the header of our main page :
 
 .lib/slang_web/templates/layout/app.html.eex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
         <nav role="navigation">
           <ul>
@@ -973,7 +974,7 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 let's add a POST route for the logout
 
 .lib/slang_web/router.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   scope "/", SlangWeb do
     ...
@@ -985,7 +986,7 @@ let's add a POST route for the logout
 Add the Action in the controller :
 
 .lib/slang_web/controllers/user_controller.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def logout(conn, _params) do
     conn 
@@ -997,7 +998,7 @@ Add the Action in the controller :
 Once again the controller will just orchestrate and delegate the action to our domain-like accounts
 
 .lib/slang/accounts/accounts.ex
-[source language='elixir',subs="+quotes,+macros"]
+[source,elixir,subs="+quotes,+macros"]
 ----
   def logout(conn) do
     conn 
@@ -1014,19 +1015,18 @@ All this noodling is done, the worst part is over, now it will be more fun !
 Once again, if you've been bored about all those copy paste to do in your app code, just checkout the branch `user_authentication_finished` copy and paste is somewhere else and attack the next chapter that will be a lot more fun !
 
 
+[source,elixir,subs="+quotes,+macros"]
+----
+----
+[source,shell,subs="+quotes,+macros"]
+----
+----
 
-[source language='elixir',subs="+quotes,+macros"]
-----
-----
-[source language='shell',subs="+quotes,+macros"]
-----
-----
-
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix phx.gen.html Chat Room rooms name:string description:string
 ----
-[source language='shell',subs="+quotes,+macros"]
+[source,shell,subs="+quotes,+macros"]
 ----
 mix phx.gen.html Chat Message messages text:string sender_id:references:users room_id:references:rooms
 ----
