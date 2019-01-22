@@ -7,7 +7,7 @@
 * elixir 1.7.3
 * phoenix 1.4.0
 * postgres 11
-* nodejs 11
+* nodejs > 10
 
 == If you have question please raise an Issue on this github repository
 
@@ -39,6 +39,14 @@ asdf global elixir 1.7.3
 mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez
 ----
 
+=== Install Nodejs
+[source language='shell']
+----
+asdf plugin-add nodejs
+asdf install nodejs 10.13.0
+asdf global nodejs 10.13.0
+----
+
 === Install Postgres in a container
 
 I typically run mine with something like that : 
@@ -59,10 +67,10 @@ download and install
 https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe
 
 === Erlang
-Install Erland Msi (google)https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0~windows_amd64.exe
+Install Erland Msi https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0~windows_amd64.exe
 
 === Elixir
-Install elixir Msi (google)https://repo.hex.pm/elixir-websetup.exe
+Install elixir Msi https://repo.hex.pm/elixir-websetup.exe
 
 === Phoenix
 run :
@@ -71,6 +79,9 @@ run :
 ----
 mix archive.install hex phx_new 1.4.0
 ----
+
+=== Nodejs
+Install nodejs Msi https://nodejs.org/dist/v10.15.0/node-v10.15.0-x64.msi
 
 === Postgres through Docker
 
