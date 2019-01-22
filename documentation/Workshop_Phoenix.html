@@ -531,7 +531,7 @@ mix ecto.migrate</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>if you see something like that, you are on the right path fellow Elixirian :)</p>
+<p>if you see something like that, you are on the right path fellow Alchemists :)</p>
 </div>
 </div>
 </div>
@@ -983,7 +983,7 @@ you can try the URL in your browser right now, but it will fail since the UserCo
 <p>just copy paste this file <code>lib/slang_web/templates/user/new.html.eex</code> to <code>lib/slang_web/templates/user/login.html.eex</code></p>
 </div>
 <div class="paragraph">
-<p>It renders something ! Awesome ! Well done fellow Elixirian !</p>
+<p>It renders something ! Awesome ! Well done fellow Alchemists !</p>
 </div>
 <div class="paragraph">
 <p>Now let&#8217;s customize our new login page !
@@ -1666,25 +1666,384 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 <div class="paragraph">
 <p>Once again, if you&#8217;ve been bored about all those copy paste to do in your app code, just checkout the branch <code>user_authentication_finished</code> copy and paste is somewhere else and attack the next chapter that will be a lot more fun !</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"></code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell"></code></pre>
 </div>
+<div class="sect1">
+<h2 id="_the_chat">The Chat !</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_models">Models</h3>
+<div class="paragraph">
+<p>We want a chat, with Rooms to chat inside !
+So we want <strong>messages</strong> from <strong>users</strong> inside <strong>rooms</strong>
+Sounds doable !</p>
+</div>
+<div class="paragraph">
+<p>Ok generating those <strong>message</strong> and <strong>room</strong> entity</p>
+</div>
+<div class="paragraph">
+<p>First the Room in a Chat context</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.gen.html Chat Room rooms name:string description:string</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>And then the Message in the same context but with a relation to the Room and the User
+Each message is from a user and is going in a room :D</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.gen.html Chat Message messages text:string sender_id:references:users room_id:references:rooms</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>follow the instructions on screen and add the 2 resources in the router</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/router.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  scope "/", SlangWeb do
+    ...
+    resources "/rooms", RoomController
+    resources "/messages", MessageController
+	end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and apply the migration to the database</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix ecto.migrate</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can look at the app and the new shema added</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.server</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="http://localhost:4000/rooms/" class="bare">http://localhost:4000/rooms/</a>
+<a href="http://localhost:4000/messages/" class="bare">http://localhost:4000/messages/</a></p>
+</div>
+<div class="paragraph">
+<p>What would be nice is that the app when it start add some default room<br>
+I want a Lobby for everyone and a Troll room for them to Rage :D</p>
+</div>
+<div class="paragraph">
+<p>We can do that in Phoenix in a seed file.</p>
+</div>
+<div class="paragraph">
+<p>Better be carefull if you don&#8217;t want to have doubles in the database.</p>
+</div>
+<div class="listingblock">
+<div class="title">priv/repo/seeds.exs</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">alias Slang.Chat
+alias Slang.Chat.Room
+alias Slang.Accounts
+alias Slang.Accounts.User
+alias Slang.Repo
+
+# USERS
+case Repo.get_by(User, email: "<a href="mailto:nicolas.savois@gmail.com">nicolas.savois@gmail.com</a>") do
+  nil -&gt;
+    {:ok, _changeset } = Accounts.create_user %{
+      email: "<a href="mailto:nicolas.savois@gmail.com">nicolas.savois@gmail.com</a>",
+      password: "niconico",
+      password_confirmation: "niconico"
+    }
+  %User{} = user -&gt;
+    IO.inspect("User #{user.email} already exists, nothing to do")
+end
+
+# Default Rooms
+rooms = [
+  %{ name: "Lobby", desc: "default room"},
+  %{ name: "Troll Den", desc: "Where troll shout and each others"}
+]
+
+Enum.map(rooms, fn %{name: room_name, desc: room_desc} -&gt;
+  case Repo.get_by(Room, name: room_name) do
+    nil -&gt;
+      {:ok, _changeset} = Chat.create_room %{
+        name: room_name,
+        description: room_desc
+      }
+    %Room{} = room -&gt;
+      IO.inspect("Room #{room.name} already exists, nothing to do")
+  end
+end
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We check if the User with email nicolas.savois@gmail already exists.
+If not we create it we are using the create_user that hash our password.
+Don&#8217;t do that in production&#8230;&#8203; the password are in plain text&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>For rooms we use a list of map to describe our rooms, and map through this list to check if it already exists and create it if not.</p>
+</div>
+<div class="paragraph">
+<p>Planting the seeds :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix run priv/repo/seeds.exs</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can check our new records in the screens<br>
+<a href="http://localhost:4000/rooms/" class="bare">http://localhost:4000/rooms/</a><br>
+and<br>
+<a href="http://localhost:4000/users/" class="bare">http://localhost:4000/users/</a></p>
+</div>
+<div class="paragraph">
+<p>Seems we can now add a new concept to the Mix, Phoenix channel !</p>
+</div>
+<div class="paragraph">
+<p>the Channels enables real time communication between the elixir phoenix server and the client<br>
+It&#8217;s based on websocket and litteraly handle MILLIONS of simultaneous connection on the same server<br>
+They tested it ! <a href="https://phoenixframework.org/blog/the-road-to-2-million-websocket-connections">Here</a></p>
+</div>
+<div class="paragraph">
+<p>Ok&#8230;&#8203; 40 Core, and 128Go Memory&#8230;&#8203; but still 2 Million connections !!!! on the same machine ! and that was 4 years ago&#8230;&#8203; I wonder what it can handle now !</p>
+</div>
+<div class="paragraph">
+<p>Ok enough rambling&#8230;&#8203; let&#8217;s use them !</p>
+</div>
+<div class="paragraph">
+<p>Generate the template for the channel !</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mix phx.gen.channel Room</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>don&#8217;t forget to had it to your socket</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/channels/user_socket.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule SlangWeb.UserSocket do
+  use Phoenix.Socket
+
+  ## Channels
+  <strong>channel "room:*", SlangWeb.RoomChannel</strong>
+  ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>let&#8217;s take a look at the generated channel:</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/channels/room_channel.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule SlangWeb.RoomChannel do
+  use SlangWeb, :channel
+
+  def join("room:lobby", payload, socket) do
+    if authorized?(payload) do
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  # Channels can be used in a request/response fashion
+  # by sending replies to requests from the client
+  def handle_in("ping", payload, socket) do
+    {:reply, {:ok, payload}, socket}
+  end
+
+  # It is also common to receive messages from the client and
+  # broadcast to everyone in the current topic (room:lobby).
+  def handle_in("shout", payload, socket) do
+    broadcast socket, "shout", payload
+    {:noreply, socket}
+  end
+
+  # Add authorization logic here as required.
+  defp authorized?(_payload) do
+    true
+  end
+end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>2 methods :
+- join : let&#8217;s you controller who joins what !
+- handle_in/3 : handle incomming message</p>
+</div>
+<div class="paragraph">
+<p>What we will do it use a handle_in for new message and rebroacast that message accross the channel.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s try that !</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">  ...
+  def handle_in("new_msg", %{"msg" =&gt; msg, "user_email" =&gt; user_email}, socket) do
+    broadcast!(socket, "new_msg", %{msg: msg, user_email: user_email})
+    {:noreply, socket}
+  end
+  ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The server is just moving things around get messages and rebroacasting it.</p>
+</div>
+<div class="paragraph">
+<p>Need an interface to test that.
+In the main page of our app let&#8217;s clean and play with that</p>
+</div>
+<div class="paragraph">
+<p>First enable the channel connection from the webpage
+It&#8217;s done with some kind of Javascript - I see your joyfull look&#8230;&#8203; don&#8217;t hide it !</p>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/app.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">...
+// Import local files
+//
+// Local files can be imported directly using relative paths, for example:
+import socket from "./socket"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>uncomment that last line</p>
+</div>
+<div class="paragraph">
+<p>Now edit the socket.js to implement a minimal logic to test the channel.
+We will only push a message after the browser is connected and listen for message, we display everything in the console to validate the round trip</p>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/socket.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">socket.connect()
+
+// Now that you are connected, you can join channels with a topic:
+let channel = socket.channel("room:lobby", {})
+
+channel.on("new_msg", payload =&gt; {
+  console.log(payload)
+})
+
+channel.join()
+  .receive("ok", resp =&gt; {
+    console.log("Joined successfully", resp)
+    channel.push("new_msg", {msg: "test message", user_id:window.userId})
+  })
+  .receive("error", resp =&gt; { console.log("Unable to join", resp) })
+
+export default socket</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>channel.on</code> will "listen" on message topic for a payload and act accordingly
+<code>channel.push</code> let us push on messages topic with a payload</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/layout/app.html.eex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html hljs" data-lang="html">&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"/&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="IE=edge"/&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;
+    &lt;title&gt;Slang · Phoenix Framework&lt;/title&gt;
+    &lt;link rel="stylesheet" href="&lt;%= Routes.static_path(@conn, "/css/app.css") %&gt;"/&gt;
+	<strong>&lt;%= if assigns[:current_user] do %&gt;
+		&lt;script&gt;window.userId = "&lt;%= assigns.current_user.id %&gt;";&lt;/script&gt;
+	&lt;% end %&gt;</strong>
+  &lt;/head&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We just need to make the userId available to javascript&#8230;&#8203; that&#8217;s not the most elegant, but probably the most effective ! :D</p>
+</div>
+<div class="paragraph">
+<p>Since the channel seems to work, let&#8217;s finish this Chat !</p>
+</div>
+<div class="paragraph">
+<p>put some html element to enable the chat</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/slang_web/templates/pages/index.html.eex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html hljs" data-lang="html">&lt;div&gt;Awesome Chat :D&lt;/div&gt;
+&lt;div id="messages"&gt;&lt;/div&gt;
+&lt;input id="chat-input" type="text"&gt;&lt;/input&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>remove everything and replace by those 3 lines</p>
+</div>
+<div class="paragraph">
+<p>now onto to javascript code</p>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/socket.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">socket.connect()
+
+// Now that you are connected, you can join channels with a topic:
+let channel           = socket.channel("room:lobby", {})
+let chatInput         = document.querySelector("#chat-input")
+let messagesContainer = document.querySelector("#messages")
+
+function addMessage(payload){
+  let messageItem = document.createElement("li")
+  messageItem.innerText = <code>${payload.user_email} : ${payload.msg}</code>
+  messagesContainer.appendChild(messageItem)
+}
+
+chatInput.addEventListener("keypress", event =&gt; {
+  if(event.keyCode === 13){
+    channel.push("new_msg", {msg: chatInput.value, user_id:window.userId})
+    chatInput.value = ""
+  }
+})
+
+channel.on("new_msg", payload =&gt; {
+  addMessage(payload)
+})
+
+channel.join()
+  .receive("ok", resp =&gt; { console.log("Joined successfully", resp) })
+  .receive("error", resp =&gt; { console.log("Unable to join", resp) })
+
+export default socket</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace everything by this<br>
+It&#8217;s pretty strait forward</p>
+</div>
+<div class="paragraph">
+<p>On enter in the input box push the message to the channel</p>
+</div>
+<div class="paragraph">
+<p>Listen for new_msg broadcast and add it to the messagesContainer</p>
+</div>
+<div class="paragraph">
+<p>And we are done !</p>
+</div>
+<div class="paragraph">
+<p>startup 2 different browser login with 2 differents user and start chat with yourself !</p>
+</div>
+<div class="paragraph">
+<p>you can checkout the finished version of the code here on tag <code>simplistic_chat_finished</code></p>
 </div>
 <div class="paragraph">
 <p>And remember, Keep Elixiring :)</p>
@@ -1695,7 +2054,7 @@ Since we have not defined it previously Phoenix will complain (vehemently with t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-22 12:23:45 UTC
+Last updated 2019-01-22 21:26:36 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">

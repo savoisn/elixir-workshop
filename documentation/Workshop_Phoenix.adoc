@@ -61,7 +61,7 @@ now let's open a browser and navigate to http://localhost:4000/[^]
 
 image::first_phoenix_screen.png[]
 
-if you see something like that, you are on the right path fellow Elixirian :)
+if you see something like that, you are on the right path fellow Alchemists :)
 
 == Authentication debut, User Creation 
 
@@ -421,7 +421,7 @@ Now Phoenix is not happy anymore, he commands us to create a login template... l
 
 just copy paste this file `lib/slang_web/templates/user/new.html.eex` to `lib/slang_web/templates/user/login.html.eex`
 
-It renders something ! Awesome ! Well done fellow Elixirian !
+It renders something ! Awesome ! Well done fellow Alchemists !
 
 Now let's customize our new login page !
 Take a look at the `lib/slang_web/templates/user/login.html.eex`
@@ -1015,22 +1015,338 @@ All this noodling is done, the worst part is over, now it will be more fun !
 Once again, if you've been bored about all those copy paste to do in your app code, just checkout the branch `user_authentication_finished` copy and paste is somewhere else and attack the next chapter that will be a lot more fun !
 
 
-[source,elixir,subs="+quotes,+macros"]
-----
-----
-[source,shell,subs="+quotes,+macros"]
-----
-----
+== The Chat !
+
+=== Models
+
+We want a chat, with Rooms to chat inside !
+So we want *messages* from *users* inside *rooms*
+Sounds doable !
+
+Ok generating those *message* and *room* entity
+
+First the Room in a Chat context
 
 [source,shell,subs="+quotes,+macros"]
 ----
 mix phx.gen.html Chat Room rooms name:string description:string
 ----
+
+And then the Message in the same context but with a relation to the Room and the User
+Each message is from a user and is going in a room :D
+
 [source,shell,subs="+quotes,+macros"]
 ----
 mix phx.gen.html Chat Message messages text:string sender_id:references:users room_id:references:rooms
 ----
 
+follow the instructions on screen and add the 2 resources in the router
 
+.lib/slang_web/router.ex
+[source,elixir,subs="+quotes,+macros"]
+----
+  scope "/", SlangWeb do
+    ...
+    resources "/rooms", RoomController
+    resources "/messages", MessageController
+	end
+----
+
+and apply the migration to the database
+
+[source,shell,subs="+quotes,+macros"]
+----
+mix ecto.migrate
+----
+
+You can look at the app and the new shema added
+
+[source,shell,subs="+quotes,+macros"]
+----
+mix phx.server
+----
+
+http://localhost:4000/rooms/
+http://localhost:4000/messages/
+
+What would be nice is that the app when it start add some default room +
+I want a Lobby for everyone and a Troll room for them to Rage :D
+
+We can do that in Phoenix in a seed file.
+
+Better be carefull if you don't want to have doubles in the database.
+
+.priv/repo/seeds.exs
+[source,elixir,subs="+quotes,+macros"]
+----
+alias Slang.Chat
+alias Slang.Chat.Room
+alias Slang.Accounts
+alias Slang.Accounts.User
+alias Slang.Repo
+
+# USERS
+case Repo.get_by(User, email: "nicolas.savois@gmail.com") do
+  nil ->
+    {:ok, _changeset } = Accounts.create_user %{
+      email: "nicolas.savois@gmail.com",
+      password: "niconico",
+      password_confirmation: "niconico"
+    }
+  %User{} = user -> 
+    IO.inspect("User #{user.email} already exists, nothing to do")
+end
+
+# Default Rooms
+rooms = [
+  %{ name: "Lobby", desc: "default room"}, 
+  %{ name: "Troll Den", desc: "Where troll shout and each others"}
+]
+
+Enum.map(rooms, fn %{name: room_name, desc: room_desc} ->
+  case Repo.get_by(Room, name: room_name) do
+    nil ->
+      {:ok, _changeset} = Chat.create_room %{
+        name: room_name,
+        description: room_desc
+      }
+    %Room{} = room -> 
+      IO.inspect("Room #{room.name} already exists, nothing to do")
+  end
+end
+)
+----
+We check if the User with email nicolas.savois@gmail already exists.
+If not we create it we are using the create_user that hash our password. 
+Don't do that in production... the password are in plain text...
+
+For rooms we use a list of map to describe our rooms, and map through this list to check if it already exists and create it if not.
+
+Planting the seeds :
+
+[source,shell,subs="+quotes,+macros"]
+----
+mix run priv/repo/seeds.exs
+----
+
+We can check our new records in the screens + 
+http://localhost:4000/rooms/ +
+and +
+http://localhost:4000/users/
+
+Seems we can now add a new concept to the Mix, Phoenix channel !
+
+the Channels enables real time communication between the elixir phoenix server and the client +
+It's based on websocket and litteraly handle MILLIONS of simultaneous connection on the same server +
+They tested it ! https://phoenixframework.org/blog/the-road-to-2-million-websocket-connections[Here]
+
+Ok... 40 Core, and 128Go Memory... but still 2 Million connections !!!! on the same machine ! and that was 4 years ago... I wonder what it can handle now ! 
+
+Ok enough rambling... let's use them !
+
+Generate the template for the channel !
+
+[source,shell,subs="+quotes,+macros"]
+----
+mix phx.gen.channel Room
+----
+
+don't forget to had it to your socket
+
+
+.lib/channels/user_socket.ex
+[source,elixir,subs="+quotes,+macros"]
+----
+defmodule SlangWeb.UserSocket do
+  use Phoenix.Socket
+
+  ## Channels
+  *channel "room:+++*+++", SlangWeb.RoomChannel*
+  ...
+----
+
+let's take a look at the generated channel: 
+
+.lib/channels/room_channel.ex
+[source,elixir,subs="+quotes,+macros"]
+----
+defmodule SlangWeb.RoomChannel do
+  use SlangWeb, :channel
+
+  def join("room:lobby", payload, socket) do
+    if authorized?(payload) do
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  # Channels can be used in a request/response fashion
+  # by sending replies to requests from the client
+  def handle_in("ping", payload, socket) do
+    {:reply, {:ok, payload}, socket}
+  end
+
+  # It is also common to receive messages from the client and
+  # broadcast to everyone in the current topic (room:lobby).
+  def handle_in("shout", payload, socket) do
+    broadcast socket, "shout", payload
+    {:noreply, socket}
+  end
+
+  # Add authorization logic here as required.
+  defp authorized?(_payload) do
+    true
+  end
+end
+----
+
+
+2 methods : 
+- join : let's you controller who joins what !
+- handle_in/3 : handle incomming message
+
+What we will do it use a handle_in for new message and rebroacast that message accross the channel.
+
+Let's try that !
+
+
+[source,elixir,subs="+quotes,+macros"]
+----
+  ...
+  def handle_in("new_msg", %{"msg" => msg, "user_email" => user_email}, socket) do
+    broadcast!(socket, "new_msg", %{msg: msg, user_email: user_email})
+    {:noreply, socket}
+  end
+  ...
+----
+
+The server is just moving things around get messages and rebroacasting it.
+
+Need an interface to test that.
+In the main page of our app let's clean and play with that
+
+First enable the channel connection from the webpage
+It's done with some kind of Javascript - I see your joyfull look... don't hide it !
+
+.assets/js/app.js
+[source,javascript,subs="+quotes,+macros"]
+----
+...
+// Import local files
+//
+// Local files can be imported directly using relative paths, for example:
+import socket from "./socket"
+----
+uncomment that last line
+
+Now edit the socket.js to implement a minimal logic to test the channel.
+We will only push a message after the browser is connected and listen for message, we display everything in the console to validate the round trip
+
+.assets/js/socket.js
+[source,javascript,subs="+quotes,+macros"]
+----
+socket.connect()
+
+// Now that you are connected, you can join channels with a topic:
+let channel = socket.channel("room:lobby", {})
+
+channel.on("new_msg", payload => {
+  console.log(payload)
+})
+
+channel.join()
+  .receive("ok", resp => { 
+    console.log("Joined successfully", resp) 
+    channel.push("new_msg", {msg: "test message", user_id:window.userId})
+  })
+  .receive("error", resp => { console.log("Unable to join", resp) })
+
+export default socket
+----
+
+`channel.on` will "listen" on message topic for a payload and act accordingly
+`channel.push` let us push on messages topic with a payload
+
+
+.lib/slang_web/templates/layout/app.html.eex
+[source,html,subs="+quotes,+macros"]
+----
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Slang · Phoenix Framework</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+	*<%= if assigns[:current_user] do %>
+		<script>window.userId = "<%= assigns.current_user.id %>";</script>
+	<% end %>*
+  </head>
+----
+
+We just need to make the userId available to javascript... that's not the most elegant, but probably the most effective ! :D
+
+Since the channel seems to work, let's finish this Chat !
+
+put some html element to enable the chat
+
+.lib/slang_web/templates/pages/index.html.eex
+[source,html,subs="+quotes,+macros"]
+----
+<div>Awesome Chat :D</div>
+<div id="messages"></div>
+<input id="chat-input" type="text"></input>
+----
+remove everything and replace by those 3 lines
+
+now onto to javascript code
+
+.assets/js/socket.js
+[source,javascript,subs="+quotes,+macros"]
+----
+socket.connect()
+
+// Now that you are connected, you can join channels with a topic:
+let channel           = socket.channel("room:lobby", {})
+let chatInput         = document.querySelector("#chat-input")
+let messagesContainer = document.querySelector("#messages")
+
+function addMessage(payload){
+  let messageItem = document.createElement("li")
+  messageItem.innerText = `${payload.user_email} : ${payload.msg}`
+  messagesContainer.appendChild(messageItem)
+}
+
+chatInput.addEventListener("keypress", event => {
+  if(event.keyCode === 13){
+    channel.push("new_msg", {msg: chatInput.value, user_id:window.userId})
+    chatInput.value = ""
+  }
+})
+
+channel.on("new_msg", payload => {
+  addMessage(payload)
+})
+
+channel.join()
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("error", resp => { console.log("Unable to join", resp) })
+
+export default socket
+----
+
+Replace everything by this +
+It's pretty strait forward
+
+On enter in the input box push the message to the channel
+
+Listen for new_msg broadcast and add it to the messagesContainer
+
+And we are done !
+
+startup 2 different browser login with 2 differents user and start chat with yourself !
+
+you can checkout the finished version of the code here on tag `simplistic_chat_finished`
 
 And remember, Keep Elixiring :)
