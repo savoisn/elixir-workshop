@@ -3,10 +3,11 @@
 == Prerequisit:
 * Docker
 * docker-compose
-* erlang
-* elixir
-* phoenix
-* postgres
+* erlang 21.1
+* elixir 1.7.3
+* phoenix 1.4.0
+* postgres 11
+* nodejs 11
 
 == If you have question please raise an Issue on this github repository
 
