@@ -140,7 +140,7 @@ https://github.com/savoisn/tennis-kata-elixir
 
 === Phoenix Workshop
 in github :
-https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Phoenix.html
+https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Phoenix.adoc
 
 as html : 
 http://htmlpreview.github.io/?https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Phoenix.html
