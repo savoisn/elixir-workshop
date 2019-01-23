@@ -1388,7 +1388,12 @@ I have to decompose / recompose the Room manually because the json helper won't 
 
 
 == Stimululs - Turbolinks
+[source,shell,subs="+quotes,+macros"]
+----
+cd assets
+npm install --save stimulus turbolinks
 
+----
 
 
 And remember, Keep Elixiring :)

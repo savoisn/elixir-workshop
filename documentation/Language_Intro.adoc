@@ -39,7 +39,11 @@ elixir hello.exs
 [source,elixir,subs="+quotes,+macros"]
 ----
 age = 23
-Maps
+----
+
+=== Maps
+[source,elixir,subs="+quotes,+macros"]
+----
 user = %{
   name: "John",
   city: "Melbourne"
