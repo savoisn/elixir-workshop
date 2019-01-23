@@ -2045,16 +2045,66 @@ It&#8217;s pretty strait forward</p>
 <div class="paragraph">
 <p>you can checkout the finished version of the code here on tag <code>simplistic_chat_finished</code></p>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_json_bonus_content_d">JSON (Bonus content :D)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We want some Json API of course.<br>
+There&#8217;s quite a lot of way to do that<br>
+Easiest is that - route - controller that&#8217;s it</p>
+</div>
+<div class="paragraph">
+<p>here is how it goes :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/router.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">   scope "/api", SlangWeb do
+     pipe_through :api
+
+     get "/rooms/:room_id", RoomController, :json_index
+   end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>uncomment this scope that has been lying at the bottom of your router<br>
+and add a get route<br>
+Notice the :room_id, it&#8217;s how you parameterize your URLs, it will be passed as a map to your controller :)</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/controllers/room_controller.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">  def json_index(conn, %{"room_id" =&gt; id}) do
+    try do
+      %{id: id, description: description, name: name}= Chat.get_room!(id)
+      json(conn, %{id: id, description: description, name: name})
+    rescue
+      _ -&gt; json(conn, %{error: "room not found"})
+    end
+  end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We just query the room by its id and render that via the json helper function instead dof the ussual render function<br>
+I have to decompose / recompose the Room manually because the json helper won&#8217;t do it by itself, it&#8217;s a security hazard to just encode your schema !</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_stimululs_turbolinks">Stimululs - Turbolinks</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>And remember, Keep Elixiring :)</p>
 </div>
 </div>
 </div>
 </div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-22 21:26:36 UTC
+Last updated 2019-01-23 07:27:52 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">
