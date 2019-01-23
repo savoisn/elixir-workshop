@@ -59,4 +59,13 @@ defmodule SlangWeb.RoomController do
     |> put_flash(:info, "Room deleted successfully.")
     |> redirect(to: Routes.room_path(conn, :index))
   end
+
+  def json_index(conn, %{"room_id" => id}) do
+    try do
+      %{id: id, description: description, name: name}= Chat.get_room!(id)
+      json(conn, %{id: id, description: description, name: name})
+    rescue
+      _ -> json(conn, %{error: "room not found"})
+    end
+  end
 end

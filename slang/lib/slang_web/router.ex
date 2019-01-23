@@ -35,7 +35,9 @@ defmodule SlangWeb.Router do
 
 
   # Other scopes may use custom stacks.
-  # scope "/api", SlangWeb do
-  #   pipe_through :api
-  # end
+   scope "/api", SlangWeb do
+     pipe_through :api
+
+     get "/rooms/:room_id", RoomController, :json_index
+   end
 end
