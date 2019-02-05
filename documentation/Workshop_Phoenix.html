@@ -719,6 +719,37 @@ mix phx.server</code></pre>
 <div class="paragraph">
 <p>And we are back up :D</p>
 </div>
+<div class="sect3">
+<h4 id="_windows_concerns">Windows concerns</h4>
+<div class="paragraph">
+<p>you need some sort of compiler instaled for bcrypt to work.
+On Windows if you don&#8217;t already have one installed, you can follow <a href="https://github.com/frenshkosh" target="_blank" rel="noopener">frenshkosh</a> way of fixing the problem</p>
+</div>
+<div class="paragraph">
+<p>you can work with Chocolatey to get the adapted tools.</p>
+</div>
+<div class="paragraph">
+<p><strong>Chocolatey</strong>
+check this link <a href="https://chocolatey.org/docs/installation" class="bare" target="_blank" rel="noopener">https://chocolatey.org/docs/installation</a>
+folllow steps for Installing Chocolatey chapter</p>
+</div>
+<div class="paragraph">
+<p><strong>Visual C++ Build Tools</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">choco install VisualCppBuildTools</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(and follow steps).</p>
+</div>
+<div class="paragraph">
+<p>add C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin in your path</p>
+</div>
+<div class="paragraph">
+<p>Thanks <a href="https://github.com/frenshkosh" target="_blank" rel="noopener">frenshkosh</a> for the solution :D</p>
+</div>
 <div class="paragraph">
 <p>Let&#8217;s hash this password !</p>
 </div>
@@ -809,6 +840,7 @@ then use Comeonin (our new dependency) to hash the password and return a new cha
 </div>
 <div class="paragraph">
 <p>Now we can create a user and store it&#8217;s hashed password and life is good and create, except we have no screen to login !</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -2110,7 +2142,7 @@ npm install --save stimulus turbolinks</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-23 07:30:46 UTC
+Last updated 2019-02-05 16:51:51 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">

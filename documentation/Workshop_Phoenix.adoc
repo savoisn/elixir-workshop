@@ -220,6 +220,29 @@ mix phx.server
 ----
 And we are back up :D
 
+==== Windows concerns
+you need some sort of compiler instaled for bcrypt to work.
+On Windows if you don't already have one installed, you can follow https://github.com/frenshkosh[frenshkosh^] way of fixing the problem
+
+you can work with Chocolatey to get the adapted tools.
+
+**Chocolatey**
+check this link https://chocolatey.org/docs/installation[^] 
+folllow steps for Installing Chocolatey chapter
+
+**Visual C++ Build Tools**
+
+
+[source,shell,subs="+quotes,+macros"]
+----
+choco install VisualCppBuildTools
+----
+(and follow steps).
+
+add C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin in your path
+
+Thanks https://github.com/frenshkosh[frenshkosh^] for the solution :D
+
 Let's hash this password !
 
 We will do that in the changeset of the schema. +
