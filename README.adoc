@@ -80,6 +80,26 @@ run :
 mix archive.install hex phx_new 1.4.0
 ----
 
+The main problem about this issue on Windows Platform is seemingly coming from a proper maker.
+Which in the case is nmake coming along with Microsoft Visual Studio Build Tools (or Visual C++)
+Correction:
+
+you can work with Chocolatey to get the adapted tools.
+
+Chocolatey
+check this link [https://chocolatey.org/docs/installation]
+folllow steps for Installing Chocolatey chapter
+
+Visual C++ Build Tools
+
+[source language='shell']
+----
+    choco install VisualCppBuildTools
+----
+
+(and follow steps).
+add C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin in your path
+
 === Nodejs
 Install nodejs Msi https://nodejs.org/dist/v10.15.0/node-v10.15.0-x64.msi
 

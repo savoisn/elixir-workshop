@@ -1,0 +1,52 @@
+- Variable :
+  - int
+  - string
+  - atoms
+  - closure
+  - autres...
+
+- List
+  - def
+  - concat
+  - head | tail
+
+- Tuple
+  - def
+  - elem
+  - File Read
+
+
+- Operator
+  - ++, --
+  - <>
+  - and or || &&
+
+- Match Operator
+  - =
+  - head | tail
+  - pin ^a
+
+- Pattern Matching
+File.read("Test")
+
+- Module
+
+- Function
+ - args
+
+- Conditional
+ - case
+  - pattern matching
+  - guard in case
+  - pattern matching in function
+ - if
+
+- Pattern matching in function
+
+On fait des Galettes ! Complete Jambon Oeuf Fromage
+
+- Maps
+
+- Structs
+
+- Tests

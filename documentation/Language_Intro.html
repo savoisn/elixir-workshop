@@ -806,8 +806,8 @@ m |&gt; put(:id, 2)      # → %{id: 2, name: "hi"}
 m |&gt; put_new(:id, 2)  # only if <code>id</code> doesn't exist (<code>||=</code>)
 m |&gt; put(:b, "Banana")
 m |&gt; merge(%{b: "Banana"})
-m |&gt; update(:a, &amp;(&amp;1 + 1))
-m |&gt; update(:a, fun a -&gt; a + 1 end)
+m |&gt; update!(:a, &amp;(&amp;1 + 1))
+m |&gt; update!(:a, fn a -&gt; a + 1 end)
 m |&gt; get_and_update(:a, &amp;(&amp;1 || "default"))
 # → {old, new}</code></pre>
 </div>
@@ -1182,7 +1182,7 @@ end</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-06 10:36:06 UTC
+Last updated 2019-02-06 11:10:40 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">

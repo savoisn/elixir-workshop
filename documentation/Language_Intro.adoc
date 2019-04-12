@@ -298,8 +298,8 @@ m |> put(:id, 2)      # → %{id: 2, name: "hi"}
 m |> put_new(:id, 2)  # only if `id` doesn't exist (`||=`)
 m |> put(:b, "Banana")
 m |> merge(%{b: "Banana"})
-m |> update(:a, &(&1 + 1))
-m |> update(:a, fun a -> a + 1 end)
+m |> update!(:a, &(&1 + 1))
+m |> update!(:a, fn a -> a + 1 end)
 m |> get_and_update(:a, &(&1 || "default"))
 # → {old, new}
 ----
