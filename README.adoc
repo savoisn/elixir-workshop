@@ -158,7 +158,15 @@ http://htmlpreview.github.io/?https://github.com/savoisn/elixir-workshop/blob/ma
 === Elixir Tennis Kata
 https://github.com/savoisn/tennis-kata-elixir
 
-=== Phoenix Workshop
+=== Phoenix Workshop Simple Chat (3h goal workshop)
+in github :
+https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Simple_Chat.adoc
+
+as html : 
+http://htmlpreview.github.io/?https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Simple_Chat.html
+
+
+=== Phoenix Workshop Full Chat with Authent (2 days goal workshop :D)
 in github :
 https://github.com/savoisn/elixir-workshop/blob/master/documentation/Workshop_Phoenix.adoc
 

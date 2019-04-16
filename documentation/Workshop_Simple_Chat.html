@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.7">
-<title>Getting Started With Elixir Syntax</title>
+<title>Elixir Phoenix Workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,749 +437,1000 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
+<h1>Elixir Phoenix Workshop</h1>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_getting_started_with_elixir_syntax">Getting Started With Elixir Syntax</h2>
+<h2 id="_what_we_will_build">What we will build</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_hello_world">Hello world</h3>
+<div class="paragraph">
+<p>A very minimalistic version of a Chat App, with Phoenix
+Features will include :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Minimalistic User Recognition</p>
+</li>
+<li>
+<p>Minimal (very very) Chat interface</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Let&#8217;s dig in
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_a_phoenix_app_tag_creation">Create a Phoenix App - tag : creation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We will build an App called Slang, Sla for Slack, and ng because why not!?!<br>
+The name of the app will be used in Module name, so if you want to be able to copy paste easily use <code>simple_chat</code> as App name</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs"># hello.exs
-defmodule Greeter do
-  def greet(name) do
-    message = "Hello, " &lt;&gt; name &lt;&gt; "!"
-    IO.puts message
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix phx.new <strong><em>folder_name</em></strong> --app simple_chat</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It will generate a Phoenix Project in the folder specified
+You will get asked to download dependencies, you can safely accept :D</p>
+</div>
+<div class="sect2">
+<h3 id="_a_tour_of_the_generated_code">A tour of the Generated Code</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">|
+|_ _build # where the package will be build
+|_ assets  # static assets, Javascript, CSS, images, webpack
+|_ config  # conf for the app
+|_ deps    # dependencies binaries
+|_ lib     # it's where our code will be.
+|_ priv    # database migration and target for static build
+|_ test    # TESTS for the sake of your mind!
+mix.exs    # project description, dependencies, build config
+README.md  # teh README, every project need one</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Not too much spoiler, I will get in lengthy details :) Ask me for more during the workshop!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_run_the_project">Run the project</h3>
+<div class="paragraph">
+<p>First Create your database, and run the migrations</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix ecto.create
+mix ecto.migrate</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>now let&#8217;s open a browser and navigate to <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="pictures/first_phoenix_screen.png" alt="first phoenix screen">
+</div>
+</div>
+<div class="paragraph">
+<p>if you see something like that, you are on the right path fellow Alchemists :)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_schema_creation">User Schema Creation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We will use another code generator.
+To generate a <em>Context</em> to store our user information</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s go :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix phx.gen.context Chat User users name:string</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Generated a bunch of stuff&#8230;&#8203; first let&#8217;s follow the instructions.</p>
+</div>
+<div class="paragraph">
+<p>Run the migration (we won&#8217;t use it very much but, for good measure&#8230;&#8203;)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix ecto.migrate</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s take a look at the generated code :</p>
+</div>
+<div class="ulist">
+<div class="title">lib/simple_chat/accounts/user.ex</div>
+<ul>
+<li>
+<p><em>lib/simple_chat/chat/user.ex</em><br>
+it&#8217;s the code of our schema<br>
+one field, name<br>
+a helper fonction <code>timestamps()</code> to generated date fields for insert and update<br>
+a method <code>changeset(user, attr)</code> to process a changeset (a set of changes applied to the entity)</p>
+</li>
+<li>
+<p><em>priv/repo/migrations/20190416054553_create_users.exs</em><br>
+the database migration to refleced the entity</p>
+</li>
+<li>
+<p><em>lib/simple_chat/chat.ex</em><br>
+set of functions to help use our schema, create read update delete</p>
+</li>
+<li>
+<p><em>test/simple_chat/chat/chat_test.exs</em><br>
+the tests for <code>lib/simple_chat/chat.ex</code></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_template_modification">Template Modification</h3>
+<div class="paragraph">
+<p>We our now set to <em>register</em> a user<br>
+We won&#8217;t try to perform any kind of security - DON&#8217;T USE THAT IN PRODUCTION -</p>
+</div>
+<div class="paragraph">
+<p>We will only store in the client session the name of our user.</p>
+</div>
+<div class="paragraph">
+<p>To do that we will create a field in the HTML template of the first page phoenix has created for us :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="html" class="language-html hljs">&lt;section class="row"&gt;
+  &lt;article class="column column-67"&gt;
+    &lt;h2&gt;My Beautiful Chat&lt;/h2&gt;
+    &lt;%= form_for @changeset, Routes.page_path(@conn, :define_user), fn f -&gt; %&gt;
+      &lt;div&gt;User :
+        &lt;%= text_input f, :text %&gt;
+        &lt;%= submit "Submit" %&gt;
+      &lt;/div&gt;
+    &lt;% end %&gt;
+  &lt;/article&gt;
+&lt;/section&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First it look like some HTML file with some templating in the middle.<br>
+There&#8217;s 4 lines that interest us in there with the special <code>&lt;%= %&gt;</code> notation<br>
+it&#8217;s simply the phoenix template notation, other language use <code>{{ }}</code> notation</p>
+</div>
+<div class="paragraph">
+<p>let&#8217;s begin with the most complicated the <code>form_for</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">    &lt;%= form_for @changeset, Routes.page_path(@conn, :define_user), fn f -&gt; %&gt;
+    ...
+    &lt;% end %&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will create an HTML form.
+As you may have notice, <code>form_for</code> is a function that take 3 arguments</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the <code>@changeset</code> will be filled with the changes in the differents html field for you.</p>
+</li>
+<li>
+<p>The <code>Routes.page_path(@conn, :define_user)</code> is a helper fonction that will return the url for the form</p>
+</li>
+<li>
+<p>the <code>fn f &#8594; &#8230;&#8203; end</code> is an anonymous function that will represent the field form itself</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_controller_adaptation">Controller Adaptation</h3>
+<div class="paragraph">
+<p>let&#8217;s go back to the browser &#8594; <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a></p>
+</div>
+<div class="paragraph">
+<p>Oups, the browser is complaining, it&#8217;s missing a <code>changeset</code></p>
+</div>
+<div class="paragraph">
+<p>let&#8217;s add it in the controller managing this <code>page.eex</code> template</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/controllers/page_controller.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule SimpleChatWeb.PageController do
+  use SimpleChatWeb, :controller
+
+  alias SimpleChat.Chat.User
+
+  def index(conn, _params) do
+    changeset = SimpleChat.Chat.change_user(%User{})
+    render(conn, "index.html")
   end
-end
-
-Greeter.greet("world")</code></pre>
+end</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>We first add an alias to the User Schema
+and then we use the Chat Repo helper to get a <code>changeset</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_router_configuration">Router Configuration</h3>
+<div class="paragraph">
+<p>Grrr&#8230;&#8203;. Phoenix is still complaining it says:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs"># hello.exs
-defmodule Greeter do
-  def greet(name) do
-    message = "Hello, " &lt;&gt; name &lt;&gt; "!"
-    IO.puts message
+<pre class="highlightjs highlight"><code class="language-none hljs">no function clause for SimpleChatWeb.Router.Helpers.page_path/2 and action :define_user. The following actions/clauses are supported:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is because the Helpers function doesn&#8217;t know the path. And for a good reason we didn&#8217;t add it in the router ! Let&#8217;s do that right now !</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/router.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule SimpleChatWeb.Router do
+  use SimpleChatWeb, :router
+
+  pipeline :browser do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
-end
 
-Greeter.greet("world")</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">elixir hello.exs
--&gt; Hello, world!</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_variables">Variables</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">age = 23</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_maps">Maps</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">user = %{
-  name: "John",
-  city: "Melbourne"
-}
-IO.puts "Hello, " &lt;&gt; user.name</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_lists">Lists</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">users = [ "Tom", "Dick", "Harry" ]
+  pipeline :api do
+    plug(:accepts, ["json"])
+  end
 
-Enum.map(users, fn user -&gt;
-  IO.puts "Hello " &lt;&gt; user
-end)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_piping">Piping</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">source
-|&gt; transform(:hello)
-|&gt; print()
+  scope "/", SimpleChatWeb do
+    pipe_through(:browser)
 
-# Same as:
-print(transform(source, :hello))</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>These two are equivalent.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_pattern_matching">Pattern matching</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">user = %{name: "Tom", age: 23}
-%{name: username} = user</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This sets username to "Tom".</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_pattern_matching_in_functions">Pattern matching in functions</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">def greet(%{name: username}) do
-  IO.puts "Hello, " &lt;&gt; username
-end
+    get("/", PageController, :index)
+    <strong>post("/", PageController, :define_user)</strong>
+  end
 
-user = %{name: "Tom", age: 23}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Pattern matching works in function parameters too.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_control_flow">Control flow</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_if">If</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">if false do
-  "This will never be seen"
-else
-  "This will"
-end</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_case">Case</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">case {1, 2, 3} do
-  {4, 5, 6} -&gt;
-    "This clause won't match"
-  {1, x, 3} -&gt;
-    "This will match and bind x to 2"
-  _ -&gt;
-   "This will match any value"
-end</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cond">Cond</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">cond do
-  1 + 1 == 3 -&gt;
-    "I will never be seen"
-  2 * 5 == 12 -&gt;
-    "Me neither"
-  true -&gt;
-    "But I will (this is essentially an else)"
-end</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_errors">Errors</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">try do
-  throw(:hello)
-catch
-  message -&gt; "Got #{message}."
-after
-  IO.puts("I'm the after clause.")
-end</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_types">Types</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_primitives">Primitives</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">nil	 ...................  Nil/null
-true / false  ..........  Boolean
-?a	....................  Integer (ASCII)
-23	....................  Integer
-3.14  ..................  Float
-'hello'  ...............  Charlist
-&lt;&lt;2, 3&gt;&gt;  ..............  Binary
-"hello"  ...............  Binary string
-:hello  ................  Atom
-[a, b]  ................  List
-{a, b}  ................  Tuple
-%{a: "hello"}  .........  Map
-%MyStruct{a: "hello"}  .  Struct
-fn -&gt; ... end  .........  Function</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_type_checks">Type checks</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">is_atom/1
-is_bitstring/1
-is_boolean/1
-is_function/1
-is_function/2
-is_integer/1
-is_float/1
-is_binary/1
-is_list/1
-is_map/1
-is_tuple/1
-is_nil/1
-is_number/1
-is_pid/1
-is_port/1
-is_reference/1</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_operators">Operators</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">left != right   # equal
-left !== right  # match
-left ++ right   # concat lists
-left &lt;&gt; right   # concat string/binary
-left =~ right   # regexp</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_modules">Modules</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_importing">Importing</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">require Redux   # compiles a module
-import Redux    # compiles, and you can use without the <code>Redux.</code> prefix
-
-use Redux       # compiles, and runs Redux.<em>using</em>/1
-use Redux, async: true
-
-import Redux, only: [duplicate: 2]
-import Redux, only: :functions
-import Redux, only: :macros
-
-import Foo.{Bar, Baz}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_aliases">Aliases</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">alias Foo.Bar, as: Bar
-alias Foo.Bar   # same as above
-
-alias Foo.{Bar, Baz}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_string">String</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_functions">Functions</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import String
-str = "hello"
-str |&gt; length()        # → 5
-str |&gt; codepoints()    # → ["h", "e", "l", "l", "o"]
-str |&gt; slice(2..-1)    # → "llo"
-str |&gt; split(" ")      # → ["hello"]
-str |&gt; capitalize()    # → "Hello"
-str |&gt; match(regex)
-Inspecting objects
-inspect(object, opts \\ [])
-value |&gt; IO.inspect()
-value |&gt; IO.inspect(label: "value")</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_numbers">Numbers</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_operations">Operations</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">abs(n)
-round(n)
-rem(a, b)   # remainder (modulo)
-div(a, b)   # integer division</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_float">Float</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import Float
-n = 10.3
-n |&gt; ceil()            # → 11.0
-n |&gt; ceil(2)           # → 11.30
-n |&gt; to_string()       # → "1.030000+e01"
-n |&gt; to_string([decimals: 2, compact: true])
-Float.parse("34")  # → { 34.0, "" }</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_integer">Integer</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import Integer
-n = 12
-n |&gt; digits()         # → [1, 2]
-n |&gt; to_charlist()    # → '12'
-n |&gt; to_string()      # → "12"
-n |&gt; is_even()
-n |&gt; is_odd()
-# Different base:
-n |&gt; digits(2)        # → [1, 1, 0, 0]
-n |&gt; to_charlist(2)   # → '1100'
-n |&gt; to_string(2)     # → "1100"
-parse("12")           # → {12, ""}
-undigits([1, 2])      # → 12
-Type casting
-Float.parse("34.1")    # → {34.1, ""}
-Integer.parse("34")    # → {34, ""}
-Float.to_string(34.1)  # → "3.4100e+01"
-Float.to_string(34.1, [decimals: 2, compact: true])  # → "34.1"</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_map">Map</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_defining">Defining</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">m = %{name: "hi"}       # atom keys (:name)
-m = %{"name" =&gt; "hi"}   # string keys ("name")</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_updating">Updating</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import Map
-m = %{m | name: "yo"}  # key must exist
-m |&gt; put(:id, 2)      # → %{id: 2, name: "hi"}
-m |&gt; put_new(:id, 2)  # only if <code>id</code> doesn't exist (<code>||=</code>)
-m |&gt; put(:b, "Banana")
-m |&gt; merge(%{b: "Banana"})
-m |&gt; update!(:a, &amp;(&amp;1 + 1))
-m |&gt; update!(:a, fn a -&gt; a + 1 end)
-m |&gt; get_and_update(:a, &amp;(&amp;1 || "default"))
-# → {old, new}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_deleting">Deleting</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">m |&gt; delete(:name)  # → %{}
-m |&gt; pop(:name)     # → {"John", %{}}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_reading">Reading</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">m |&gt; get(:id)       # → 1
-m |&gt; keys()         # → [:id, :name]
-m |&gt; values()       # → [1, "hi"]
-m |&gt; to_list()      # → [id: 1, name: "hi"]
-                    # → [{:id, 1}, {:name, "hi"}]</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_deep">Deep</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">put_in(map, [:b, :c], "Banana")
-put_in(map[:b][:c], "Banana")    # via macros
-get_and_update_in(users, ["john", :age], &amp;{&amp;1, &amp;1 + 1})</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_constructing_from_lists">Constructing from lists</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">Map.new([{:b, 1}, {:a, 2}])
-Map.new([a: 1, b: 2])
-Map.new([:a, :b], fn x -&gt; {x, x} end)  # → %{a: :a, b: :b}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_list">List</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import List
-l = [ 1, 2, 3, 4 ]
-l = l ++ [5]         # push (append)
-l = [ 0 | list ]     # unshift (prepend)
-l |&gt; first()
-l |&gt; last()
-l |&gt; flatten()
-l |&gt; flatten(tail)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Also see Enum.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_enum">Enum</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_usage">Usage</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import Enum
-list = [:a, :b, :c]
-list |&gt; at(0)         # → :a
-list |&gt; count()       # → 3
-list |&gt; empty?()      # → false
-list |&gt; any?()        # → true
-list |&gt; concat([:d])  # → [:a, :b, :c, :d]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Also, consider streams instead.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_mapreduce">Map/reduce</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">list |&gt; reduce(fn)
-list |&gt; reduce(acc, fn)
-list |&gt; map(fn)
-list |&gt; reject(fn)
-list |&gt; any?(fn)
-list |&gt; empty?(fn)
-[1, 2, 3, 4]
-|&gt; Enum.reduce(0, fn(x, acc) -&gt; x + acc end)</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_tuple">Tuple</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_tuples">Tuples</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">import Tuple
-t = { :a, :b }
-t |&gt; elem(1)    # like tuple[1]
-t |&gt; put_elem(index, value)
-t |&gt; tuple_size()</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_keyword_lists">Keyword lists</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">list = [{ :name, "John" }, { :age, 15 }]
-list[:name]
-# For string-keyed keyword lists
-list = [{"size", 2}, {"type", "shoe"}]
-List.keyfind(list, "size", 0)  # → {"size", 2}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_functions_2">Functions</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_lambdas">Lambdas</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">square = fn n -&gt; n*n end
-square.(20)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_syntax">&amp; syntax</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">square = &amp;(&amp;1 * &amp;1)
-square.(20)
-
-square = &amp;Math.square/1</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_running">Running</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">fun.(args)
-apply(fun, args)
-apply(module, fun, args)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_function_heads">Function heads</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">def join(a, b \\ nil)
-def join(a, b) when is_nil(b) do: a
-def join(a, b) do: a &lt;&gt; b</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_structs">Structs</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_structs_2">Structs</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule User do
-  defstruct name: "", age: nil
-end
-
-%User{name: "John", age: 20}
-
-%User{}.struct  # → User</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>See: Structs</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_protocols">Protocols</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_defining_protocols">Defining protocols</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defprotocol Blank do
-  @doc "Returns true if data is considered blank/empty"
-  def blank?(data)
-end
-defimpl Blank, for: List do
-  def blank?([]), do: true
-  def blank?(_), do: false
-end
-
-Blank.blank?([])  # → true</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>that&#8217;s how you define contracts with Elixir</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_any">Any</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defimpl Blank, for: Any do ... end
-
-defmodule User do
-  @derive Blank     # Falls back to Any
-  defstruct name: ""
-end</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_examples">Examples</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">Enumerable and Enum.map()
-Inspect and inspect()</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_comprehensions">Comprehensions</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_for">For</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">for n &lt;- [1, 2, 3, 4], do: n * n
-for n &lt;- 1..4, do: n * n
-for {key, val} &lt;- %{a: 10, b: 20}, do: val
-# → [10, 20]
-for {key, val} &lt;- %{a: 10, b: 20}, into: %{}, do: {key, val*val}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_conditions">Conditions</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">for n &lt;- 1..10, rem(n, 2) == 0, do: n
-# → [2, 4, 6, 8, 10]</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_complex">Complex</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">for dir &lt;- dirs,
-    file &lt;- File.ls!(dir),          # nested comprehension
-    path = Path.join(dir, file),    # invoked
-    File.regular?(path) do          # condition
-  IO.puts(file)
-end</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_misc">Misc</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_metaprogramming">Metaprogramming</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs"><em>MODULE</em>
-<em>MODULE</em>.<em>info</em>
-
-@after_compile <em>MODULE</em>
-def <em>before_compile</em>(env)
-def <em>after_compile</em>(env, _bytecode)
-def <em>using</em>(opts)    # invoked on <code>use</code>
-
-@on_definition {<em>MODULE</em>, :on_def}
-def on_def(_env, kind, name, args, guards, body)
-
-@on_load :load_check
-def load_check</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_regexp">Regexp</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">exp = ~r/hello/
-exp = ~r/hello/i
-"hello world" =~ exp</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_sigils">Sigils</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">~r/regexp/
-~w(list of strings)
-~s|strings with #{interpolation} and \x20 escape codes|
-~S|no interpolation and no escapes|
-~c(charlist)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Allowed chars: / | " ' ( [ { &lt; """. See: Sigils</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_type_specs">Type specs</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">@spec round(number) :: integer
-
-@type number_with_remark :: {number, String.t}
-@spec add(number, number) :: number_with_remark</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>checked with dialyzer. See: Typespecs</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_behaviours">Behaviours</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule Parser do
-  @callback parse(String.t) :: any
-  @callback extensions() :: [String.t]
-end
-defmodule JSONParser do
-  @behaviour Parser
-
-  def parse(str), do: # ... parse JSON
-  def extensions, do: ["json"]
+  # Other scopes may use custom stacks.
+  # scope "/api", SimpleChatWeb do
+  #   pipe_through :api
+  # end
 end</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>See: Module</p>
+<p>Ok the router is the place where each http request will be routed.<br>
+It manage a Pipeline that request goes through.<br>
+We see 2 pipelines described here, :browser and :api<br>
+it&#8217;s a list of <strong>plug</strong> that will handle operations and verifications on the http request (headers, jwt token, session, etc&#8230;&#8203;)</p>
+</div>
+<div class="paragraph">
+<p>Scopes are the place where we associate URL and a pipeline.<br>
+The routing of the request based on that.<br>
+It&#8217;s like a pattern match with a Case statement but for http request.<br>
+If one scope fails to apply the request is tried to all different scope of the router until it finds one matching route or returns as a failure (404 not found).</p>
+</div>
+<div class="paragraph">
+<p>We just have to add our post route for the user to "define itself"
+In the Scope "/" as show above in bold</p>
+</div>
+<div class="paragraph">
+<p>Meanwhile in browser at <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a></p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s finally working !</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="pictures/user_login.png" alt="user login">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_controller_logic">Controller logic</h3>
+<div class="paragraph">
+<p>We need to add this username into our session, so that the user can "feel" connected</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s add the target function of the router (<code>:define_user</code>) to the controller</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/controllers/page_controller.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">  def define_user(conn, %{"user" =&gt; %{"text" =&gt; user}} = params) do
+    changeset = SimpleChat.Chat.change_user(%User{})
+
+    case user do
+      "" -&gt;
+        conn
+        |&gt; put_flash(:error, "Username cannot be empty")
+        |&gt; render("index.html", %{user: nil, changeset: changeset})
+
+      _ -&gt;
+        conn
+        |&gt; Plug.Conn.put_session(:user, user)
+        |&gt; render("index.html", %{user: user, changeset: changeset})
+    end
+  end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Don&#8217;t be afraid, it&#8217;s long but it&#8217;s pretty simple.</p>
+</div>
+<div class="paragraph">
+<p>This function takes 2 arguments:
+- conn : which represent the http connection (request, response, header)<br>
+  It has to be the return value of the function<br>
+  You can&#8217;t modify the one given in argument but you can create a new one, with the value modified
+- params : it&#8217;s the values of the fields in the format of a map,<br>
+  with each key represented as a "String"<br>
+  so you need to use the <code>%{"Key" &#8658; "Value"}</code> notation</p>
+</div>
+<div class="paragraph">
+<p>Next we create a changeset that is the same as before</p>
+</div>
+<div class="paragraph">
+<p>And then we check weither or not the user is defined or not - weither or not the user has entered it&#8217;s name
+We do that with a case on user, and pattern match weither the string is empty or not.</p>
+</div>
+<div class="paragraph">
+<p>So if the string is an empty string, we add a flash message to the connection, to display the error to the user.</p>
+</div>
+<div class="paragraph">
+<p>And if the username is not empty we add it to the session with the <code>Plug.Conn.put_session</code> function.<br>
+This will return a new <code>conn</code> with the username set in the <code>:user</code> key.</p>
+</div>
+<div class="paragraph">
+<p>In the end this will be added to the JWT token and passed as a cookie managed by phoenix to hold the session data, in a stateless manner.</p>
+</div>
+<div class="paragraph">
+<p>We then <code>render</code> the <code>index.html</code> and pass some argument to the template.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_showing_the_user_he_is_connected">Showing the user he is connected</h3>
+<div class="paragraph">
+<p>If the user is connected we are going to hide the text field and button and show it&#8217;s connection username and a disconnect button :</p>
+</div>
+<div class="paragraph">
+<p>3 steps :
+- template to modify
+- route to add for "disconnection"
+- function in controller to handle "disconnection"</p>
+</div>
+<div class="sect3">
+<h4 id="_first_the_template">first the template</h4>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/template/page/index.html.eex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="html" class="language-html hljs">&lt;section class="row"&gt;
+  &lt;article class="column column-67"&gt;
+    &lt;h2&gt;My Beautiful Chat&lt;/h2&gt;
+    &lt;%= if @user == nil do %&gt;
+      &lt;%= form_for @changeset, Routes.page_path(@conn, :define_user), fn f -&gt; %&gt;
+        &lt;div&gt;User :
+          &lt;%= text_input f, :text %&gt;
+          &lt;%= submit "Submit" %&gt;
+        &lt;/div&gt;
+      &lt;% end %&gt;
+    &lt;% else %&gt;
+      &lt;input id="userName" type="hidden" value="&lt;%= @user %&gt;" /&gt;
+        &lt;div&gt; Connected as &lt;%= @user %&gt;
+          &lt;%= link "Delete", to: Routes.page_path(@conn, :disconnect_user), method: :delete, class: "btn btn-danger btn-xs" %&gt;
+        &lt;/div&gt;
+    &lt;% end %&gt;
+  &lt;/article&gt;
+&lt;/section&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We introduce logic in the template based on <code>@user</code> (which is the param passed to the view)</p>
+</div>
+<div class="paragraph">
+<p>If the user is not present in the session we ask for a username</p>
+</div>
+<div class="paragraph">
+<p>If the user is present, we display the username and a link to disconnect<br>
+Note the method on the list - it&#8217;s very usefull to respect the REST protocol</p>
+</div>
+<div class="paragraph">
+<p>The hidden input will be used later for the javascript of the channel.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_second_the_route_in_the_router">second the route in the router</h4>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/controllers/page_controller.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">  scope "/", SimpleChatWeb do
+    pipe_through(:browser)
+
+    get("/", PageController, :index)
+    post("/", PageController, :define_user)
+    <strong>delete("/", PageController, :disconnect_user)</strong>
+  end</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_third_the_controller">third the controller</h4>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/controllers/page_controller.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">  def index(conn, _params) do
+    changeset = SimpleChat.Chat.change_user(%User{})
+    <strong>user = plug.conn.get_session(conn, :user)</strong> <b class="conum">(1)</b>
+    render(conn, "index.html", %{<strong>user: user</strong>, changeset: changeset})
+  end
+
+....
+
+  def disconnect_user(conn, _params) do
+    changeset = SimpleChat.Chat.change_user(%User{})
+
+    conn
+    |&gt; Plug.Conn.delete_session(:user) <b class="conum">(2)</b>
+    |&gt; render("index.html", %{user: nil, changeset: changeset})
+  end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>get the user from the session, and add it to the template render</p>
+</li>
+<li>
+<p>we disconnect the user by removing the key <code>:user</code> from the session</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>here you go <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a>:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="pictures/user_disconnect.png" alt="user disconnect">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_le_chat_en_lui_même">Le Chat en lui même</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To handle communication between the differents users browser, Phoenix has Channel.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create one :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix phx.gen.channel Chat</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once again phoenix generates 2 files, one for implementation of the channel, and the second one for the tests.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s take a look at the channel code :</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/channels/chat.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule SimpleChatWeb.ChatChannel do
+  use SimpleChatWeb, :channel
+
+  def join("chat:lobby", payload, socket) do <b class="conum">(1)</b>
+    if authorized?(payload) do
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  # Channels can be used in a request/response fashion
+  # by sending replies to requests from the client
+  def handle_in("ping", payload, socket) do <b class="conum">(2)</b>
+    {:reply, {:ok, payload}, socket} <b class="conum">(3)</b>
+  end
+
+  # It is also common to receive messages from the client and
+  # broadcast to everyone in the current topic (chat:lobby).
+  def handle_in("shout", payload, socket) do
+    broadcast socket, "shout", payload <b class="conum">(4)</b>
+    {:noreply, socket} <b class="conum">(5)</b>
+  end
+
+  # Add authorization logic here as required.
+  defp authorized?(_payload) do
+    true
+  end
+end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>the function that is called when a new client connects</p>
+</li>
+<li>
+<p>the function that is called when a message is send to the channel.</p>
+</li>
+<li>
+<p>the response is a tuple<br>
+it will <code>:reply</code> <em>something</em> as a second parameter <code>another tuple</code><br>
+and last parameter is the <code>socket</code><br>
+like in controller function we have to return the socket.<br>
+the response is for the caller only 1 to 1 communication.</p>
+</li>
+<li>
+<p>you can also broadcast to all client connected to the channel.<br>
+Here we broadcast the payload with the message shout to every client connected to the channel</p>
+</li>
+<li>
+<p>in this case we don&#8217;t reply anything&#8230;&#8203;<br>
+we already broadcasted to everyone&#8230;&#8203;<br>
+no need to make more noise !</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>But the channel we just described need to be handled some streams ! let&#8217;s plug that</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/channels/chat.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule SimpleChatWeb.UserSocket do
+  use Phoenix.Socket
+
+    ## Channels
+    channel("chat:*", SimpleChatWeb.ChatChannel) <b class="conum">(1)</b>
+
+		....</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>here you go, any client channel that pushes messages to the the channel <em>chat:anything</em></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Now we have to generate a message entity</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix phx.gen.context Chat Message messages text:string sender:string
+mix ecto.migrate</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It generate same thing as previous generator, a schema and some helper function in the SimpleChat.Chat context</p>
+</div>
+<div class="paragraph">
+<p>Ok we are ready to plug everything between the phoenix channel and the javascript of your html pages.</p>
+</div>
+<div class="paragraph">
+<p>Phoenix comes in with a webpack project built in.
+We can find it in the <code>assets</code> folder.
+let&#8217;s enable the javascript channel :</p>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/app.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="javascript" class="language-javascript hljs">// Import local files
+//
+// Local files can be imported directly using relative paths, for example:
+import socket from "./socket"; <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>uncomment this line to add it to the javascript build</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/socket.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="javascript" class="language-javascript hljs">let channel = socket.channel("<strong>chat:lobby</strong>", {}); <b class="conum">(1)</b>
+channel
+  .join()
+  .receive("ok", resp =&gt; {
+    console.log("Joined successfully", resp);
+  })
+  .receive("error", resp =&gt; {
+    console.log("Unable to join", resp);
+  });</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>you have to specify a channel that maps the one described in <code>lib/simple_chat_web/channels/chat.ex</code></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>let&#8217;s look at the logs in the web page <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a></p>
+</div>
+<div class="paragraph">
+<p>you should see in the browser console something like that :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="pictures/channel_connection.png" alt="channel connection">
+</div>
+</div>
+<div class="paragraph">
+<p>meaning the channel is open between your browser and your server!</p>
+</div>
+<div class="paragraph">
+<p>Awesome let&#8217;s put it to use !</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/templates/page/index.html.eex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="html" class="language-html hljs">...
+    <em>&lt;% end %&gt;</em>
+
+    &lt;div&gt;
+      &lt;ul id="chatMessages"&gt;
+        &lt;li style="list-style-type:none"&gt;
+          welcome to chat
+        &lt;/li&gt;
+      &lt;/ul&gt;
+
+		&lt;/div&gt;
+    &lt;div&gt;
+      &lt;textarea id="myTextArea" col=100&gt;&lt;/textarea&gt;
+      &lt;button onClick="sendMessage()"&gt;Send&lt;/button&gt;
+		&lt;/div&gt;
+
+  <em>&lt;/article&gt;</em>
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We had a list to hold the messages from other users<br>
+A textArea for the message and a button to send the message</p>
+</div>
+<div class="paragraph">
+<p>In the Javascript side it&#8217;s more interesting</p>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/socket.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="javascript" class="language-javascript hljs">...
+channel.on("new_message", payload =&gt; { <b class="conum">(1)</b>
+  const ul = document.getElementById("chatMessages");
+  const li = document.createElement("li");
+  const textnode = document.createTextNode(
+    payload.userName + " : " + payload.message
+  );
+  li.style.listStyleType = "none";
+  li.appendChild(textnode);
+  ul.appendChild(li);
+
+});
+
+let sendMessage = () =&gt; { <b class="conum">(2)</b>
+  const msgBox = document.getElementById("myTextArea");
+  const user = document.getElementById("userName");
+
+  const msg = msgBox.value;
+  const payload = {
+    userName: user.value,
+    message: msg
+  };
+  channel.push("message", payload); <b class="conum">(3)</b>
+  msgBox.value = "";
+};
+
+window.sendMessage = sendMessage <b class="conum">(4)</b>
+
+<em>export default socket;</em> <b class="conum">(5)</b>
+...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>on an inconnoming "new_message" we add it to the list</p>
+</li>
+<li>
+<p>we define a function to send message to the server for broadcasting</p>
+</li>
+<li>
+<p>we build a payload as a javascript object and push it through the channel</p>
+</li>
+<li>
+<p>make sendMessage function available to the html (I know it&#8217;s dirty&#8230;&#8203; but it&#8217;s not the point to show nice Javascript&#8230;&#8203;)</p>
+</li>
+<li>
+<p>don&#8217;t remplace it, this line should already be there :D</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Last part it to handle the new_message on the elixir channel side</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/channels/chat_channel.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule SimpleChatWeb.ChatChannel do
+  use SimpleChatWeb, :channel
+
+  def join("chat:lobby", payload, socket) do
+    if authorized?(payload) do
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  def handle_in("message", payload, socket) do <b class="conum">(1)</b>
+    broadcast(socket, "new_message", payload) <b class="conum">(2)</b>
+    {:noreply, socket}
+  end
+
+  # Add authorization logic here as required.
+  defp authorized?(_payload) do
+    true
+  end
+end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>function to handle the "message" topic</p>
+</li>
+<li>
+<p>we rebroadcast the payload to all client<br>
+don&#8217;t do that in production&#8230;&#8203;<br>
+at least serialize deserialize the payload&#8230;&#8203;</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>I&#8217;ve clean useless functions, ping and shout</p>
+</div>
+<div class="paragraph">
+<p>And here we are the chat should be working <a href="http://localhost:4000/" class="bare" target="_blank" rel="noopener">http://localhost:4000/</a>!!</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="pictures/chat.gif" alt="chat">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_final_step_who_is_online_phoenix_presence">Final Step : Who is Online - Phoenix Presence</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create a Presence with Phoenix generator</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">mix phx.gen.presence</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>this generate a presence file in the channel folder
+mostly comment&#8230;&#8203;
+.lib/simple_chat_web/channels/presence.ex</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">...
+  use Phoenix.Presence, otp_app: :simple_chat,
+                        pubsub_server: SimpleChat.PubSub
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We start tell the Presence to use the app :simple_chat and to use our app PubSub server nothing to fear here :D</p>
+</div>
+<div class="paragraph">
+<p>Add the Presence to your supervision tree as said in the command log :
+.lib/simple_chat/application.ex</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">    children = [
+      # Start the Ecto repository
+      SimpleChat.Repo,
+      # Start the endpoint when the application starts
+      SimpleChatWeb.Endpoint,
+      SimpleChatWeb.Presence
+      # Starts a worker by calling: SimpleChat.Worker.start_link(arg)
+      # {SimpleChat.Worker, arg},
+    ]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The supervision tree is the list of Process that compose the Phoenix application and that sould be restarted when thy crash
+This is where the <code>Let It Crash</code> Mojo is created</p>
+</div>
+<div class="paragraph">
+<p>Now First add the minimum HTML to display the list of connected users</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/templates/pages/index.html.eex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="html" class="language-html hljs">  <em>&lt;/article&gt;</em> //already exists
+
+  &lt;article class="column"&gt;
+    &lt;h2&gt;User Connected&lt;/h2&gt;
+		&lt;ul id="usersList"&gt;
+		&lt;/ul&gt;
+  &lt;/article&gt;
+&lt;/section&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>just a html empty list</p>
+</div>
+<div class="listingblock">
+<div class="title">assets/js/socket.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="javascript" class="language-javascript hljs">// Only the bold is to add to the <code>socket.js</code>
+import { Socket, <strong>Presence</strong> } from "phoenix";
+
+<strong>const user = document.getElementById("userName");</strong>
+let socket = new Socket("/socket", {
+  params: { token: window.userToken, <strong>user_name: user.value</strong> } <b class="conum">(1)</b>
+});
+...
+
+// after the channel definition add this to enable presence:
+
+let presence = new Presence(channel); <b class="conum">(2)</b>
+
+let renderOnlineUsers = presence =&gt; { <b class="conum">(4)</b>
+  let response = "";
+  const ul = document.getElementById("usersList");
+
+  ul.innerHTML = "";
+
+  presence.listuser_name, { metas: [first, ...rest] }) =&gt; {     let count = rest.length + 1;     const li = document.createElement("li");     const textnode = document.createTextNode(<code>${user_name} (count: ${count})</code>);     li.appendChild(textnode);     ul.appendChild(li);   }); };  presence.onSync(() =&gt; renderOnlineUsers(presence; <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>we had a new param to the data given to the socket when it connects to the server</p>
+</li>
+<li>
+<p>we create a Presence based on our channel</p>
+</li>
+<li>
+<p>on presence synchronisation we call the function renderOnlineUsers</p>
+</li>
+<li>
+<p>the presence will give us a list of users, for each user we have a &lt;li&gt; to our &lt;ul&gt;<br>
+the presence will give us the username connected and the number of connection this username is connected to</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We need to handle the new params that we added to the socket opening in <code>socket.js</code>
+.lib/simple_chat/channels/user_socket.ex</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">...
+  def connect(params, socket, _connect_info) do
+    {:ok, <strong>assign(socket, :user_name, params["user_name"])</strong>} <b class="conum">(1)</b>
+  end
+...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>the assign function return a new socket with the :user_name in the assigns of the socket.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s handle the presence in our Elixir Channel</p>
+</div>
+<div class="listingblock">
+<div class="title">lib/simple_chat_web/channels/chat_channel.ex</div>
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs">defmodule SimpleChatWeb.ChatChannel do
+  use SimpleChatWeb, :channel
+  <strong>alias SimpleChatWeb.Presence</strong> <b class="conum">(1)</b>
+
+  def join("chat:lobby", payload, socket) do
+    if authorized?(payload) do
+      <strong>send(self(), :after_join)</strong> <b class="conum">(2)</b>
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  def handle_info(:after_join, socket) do <b class="conum">(3)</b>
+    push(socket, "presence_state", Presence.list(socket)) <b class="conum">(4)</b>
+
+    {:ok, _} = <b class="conum">(5)</b>
+      Presence.track(socket, socket.assigns.user_name, %{
+        online_at: inspect(System.system_time(:second))
+      })
+
+    {:noreply, socket}
+  end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>we alias the previously created Presence</p>
+</li>
+<li>
+<p>we send a message to ourself for the function handling :after_join to be called</p>
+</li>
+<li>
+<p>function to handle to after_join message</p>
+</li>
+<li>
+<p>when a user in joining the Channel, we notify the Presence with the Socket</p>
+</li>
+<li>
+<p>we define what the presence shoud track here : the user_name from the socket <em>assigns</em> (list of value attached to the socket - define in the params of the socket creation in the socket.js)</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="pictures/channel_presence.gif" alt="channel presence">
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="elixir" class="language-elixir hljs"></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="javascript" class="language-javascript hljs"></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs"></code></pre>
 </div>
 </div>
 </div>
@@ -1187,7 +1438,7 @@ end</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-06 11:10:40 UTC
+Last updated 2019-04-16 20:39:45 UTC
 </div>
 </div>
 <link rel="stylesheet" href="highlight/styles/github.min.css">
