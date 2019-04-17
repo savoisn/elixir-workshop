@@ -50,7 +50,7 @@ First Create your database, and run the migrations
 [source,shell,subs="+quotes,+macros"]
 ----
 mix ecto.create
-mix ecto.migrate
+mix phx.server
 ----
 
 now let's open a browser and navigate to http://localhost:4000/[^]
