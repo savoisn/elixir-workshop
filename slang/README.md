@@ -31,3 +31,4 @@ mix phx.gen.html Account UserType usertypes type:string
 mix phx.gen.html Account User users name:string email:string adress:string user_type_id:references:usertypes
 ```
 
+
